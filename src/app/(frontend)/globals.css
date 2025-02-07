@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 242 70% 98%;
+    --foreground: 242 55% 1%;
+    --muted: 220 14.3% 93.9%;
+    --muted-foreground: 242 15% 25%;
+    --popover: 242 70% 98%;
+    --popover-foreground: 242 55% 1%;
+    --card: 242 70% 98%;
+    --card-foreground: 242 55% 1%;
+    --border: 242 2% 92%;
+    --input: 242 2% 92%;
+    --primary: 242 97% 83%;
+    --primary-foreground: 242 97% 23%;
+    --secondary: 242 6% 86%;
+    --secondary-foreground: 242 6% 26%;
+    --accent: 242 14% 79%;
+    --accent-foreground: 242 14% 19%;
+    --destructive: 14 81% 29%;
+    --destructive-foreground: 14 81% 89%;
+    --ring: 242 97% 83%;
+    --chart-1: 242 97% 83%;
+    --chart-2: 242 6% 86%;
+    --chart-3: 242 14% 79%;
+    --chart-4: 242 6% 89%;
+    --chart-5: 242 100% 83%;
+    --radius: 0.5rem;
+  }
+
+  [data-theme='dark'] {
+    --background: 242 42% 2%;
+    --foreground: 242 39% 97%;
+    --muted: 242 13% 15%;
+    --muted-foreground: 242 15% 75%;
+    --popover: 242 42% 2%;
+    --popover-foreground: 242 39% 97%;
+    --card: 242 42% 2%;
+    --card-foreground: 242 39% 97%;
+    --border: 242 2% 14%;
+    --input: 242 2% 14%;
+    --primary: 242 97% 83%;
+    --primary-foreground: 242 97% 23%;
+    --secondary: 242 15% 15%;
+    --secondary-foreground: 242 15% 75%;
+    --accent: 242 24% 23%;
+    --accent-foreground: 242 24% 83%;
+    --destructive: 14 81% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 242 97% 83%;
+    --chart-1: 242 97% 83%;
+    --chart-2: 242 15% 15%;
+    --chart-3: 242 24% 23%;
+    --chart-4: 242 15% 18%;
+    --chart-5: 242 100% 83%;
+  }
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: auto;
+    font-weight: auto;
+  }
+
+  :root {
+    --gradient-start: var(--primary);
+    --gradient-end: 199 89% 58%;
+    --gradient: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+    --revert: 0 0% 0%;
+    --shadow-color: 220 3% 15%;
+    --shadow-strength: 1%;
+  }
+
+  [data-theme='dark'] {
+    --gradient-start: var(--primary);
+    --gradient-end: 199 70% 48%;
+    --gradient: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+    --revert: 0, 0%, 100%;
+    --shadow-color: 263.4 70% 50.4%;
+    --shadow-strength: 4%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+html {
+  opacity: 0;
+}
+
+html[data-theme='dark'],
+html[data-theme='light'] {
+  opacity: initial;
+}

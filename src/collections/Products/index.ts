@@ -1,0 +1,262 @@
+import type { CollectionConfig } from 'payload'
+import { authenticated } from '../../access/authenticated'
+import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
+import { slugField } from '@/fields/slug'
+import {
+  MetaDescriptionField,
+  MetaImageField,
+  MetaTitleField,
+  OverviewField,
+  PreviewField,
+} from '@payloadcms/plugin-seo/fields'
+import { Product } from '@/payload-types'
+
+export const uiPopulate = {
+  title: true,
+  images: true,
+  summary: true,
+  slug: true,
+  aboutThisTour: true,
+  city: true,
+  lowestPrice: true,
+} as const
+
+export const Products: CollectionConfig = {
+  slug: 'products',
+  labels: {
+    singular: '产品',
+    plural: '产品',
+  },
+  admin: {
+    group: '页面',
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'updatedAt'],
+  },
+  access: {
+    create: authenticated,
+    delete: authenticated,
+    read: authenticatedOrPublished,
+    update: authenticated,
+  },
+  defaultPopulate: {
+    meta: {
+      image: true,
+      description: true,
+    },
+    ...uiPopulate,
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+      label: '标题',
+    },
+    {
+      name: 'lowestPrice',
+      type: 'number',
+      label: '最低价格',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: '自动计算的最低价格',
+      },
+    },
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: '内容',
+          fields: [
+            {
+              name: 'images',
+              label: '图片',
+              type: 'array',
+              fields: [
+                {
+                  name: 'image',
+                  label: '图片',
+                  type: 'upload',
+                  relationTo: 'media',
+                  required: true,
+                },
+              ],
+            },
+            {
+              name: 'categories',
+              type: 'relationship',
+              relationTo: 'categories',
+              hasMany: true,
+              index: true,
+              label: '分类',
+            },
+            {
+              name: 'summary',
+              type: 'textarea',
+              label: '简介',
+              maxLength: 200,
+            },
+            {
+              name: 'aboutThisTour',
+              type: 'group',
+              fields: [
+                {
+                  name: 'cancellation',
+                  label: '提前取消天数',
+                  type: 'number',
+                  defaultValue: 1,
+                  required: true,
+                },
+                {
+                  name: 'duration',
+                  label: '游玩时长(小时)',
+                  type: 'number',
+                  required: true,
+                },
+                {
+                  name: 'disabledFriendly',
+                  label: '残疾人友好',
+                  type: 'checkbox',
+                  defaultValue: false,
+                },
+                {
+                  name: 'skipTicketLine',
+                  label: '无需排队',
+                  type: 'checkbox',
+                  defaultValue: false,
+                },
+              ],
+            },
+            {
+              name: 'highlights',
+              type: 'array',
+              label: '产品亮点/注意事项',
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+              admin: {
+                description: '添加产品亮点或重要注意事项',
+              },
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              label: '详细描述',
+              minLength: 500,
+              maxLength: 3000,
+            },
+            {
+              name: 'includes',
+              type: 'array',
+              label: '产品包含',
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+            },
+            {
+              name: 'excludes',
+              type: 'array',
+              label: '产品不包含',
+              fields: [
+                {
+                  name: 'text',
+                  type: 'text',
+                  required: true,
+                },
+              ],
+            },
+            {
+              name: 'importantInfo',
+              type: 'array',
+              label: '重要信息',
+              fields: [
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  label: '标题',
+                },
+                {
+                  name: 'content',
+                  type: 'array',
+                  label: '内容',
+                  fields: [
+                    {
+                      name: 'text',
+                      type: 'text',
+                      required: true,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              name: 'city',
+              type: 'relationship',
+              relationTo: 'cities',
+              hasMany: false,
+              index: true,
+              label: '所在城市',
+            },
+            {
+              name: 'productOptions',
+              type: 'join',
+              label: '产品选项',
+              collection: 'product-options',
+              on: 'product',
+            },
+          ],
+        },
+        {
+          name: 'meta',
+          label: 'SEO',
+          fields: [
+            OverviewField({
+              titlePath: 'meta.title',
+              descriptionPath: 'meta.description',
+              imagePath: 'meta.image',
+            }),
+            MetaTitleField({
+              hasGenerateFn: true,
+            }),
+            MetaImageField({
+              relationTo: 'media',
+              overrides: {
+                hooks: {
+                  beforeChange: [
+                    async ({ data }) => {
+                      const { images } = data as Product
+                      if (images && images.length > 0) {
+                        return images[0].image
+                      }
+                      return null
+                    },
+                  ],
+                },
+              },
+            }),
+
+            MetaDescriptionField({}),
+            PreviewField({
+              hasGenerateFn: true,
+              titlePath: 'meta.title',
+              descriptionPath: 'meta.description',
+            }),
+          ],
+        },
+      ],
+    },
+    ...slugField(),
+  ],
+  versions: {
+    drafts: true,
+  },
+}

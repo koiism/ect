@@ -1,0 +1,15 @@
+export enum BlockType {
+  FormBlock = 'formBlock',
+  BannerBlock = 'bannerBlock',
+  MediaBlock = 'mediaBlock',
+  GridBlock = 'gridBlock',
+  RowBlock = 'rowBlock',
+  ColumnBlock = 'columnBlock',
+  SearchBlock = 'searchBlock',
+  ProductCardBlock = 'productCardBlock',
+  RecommendationBlock = 'recommendationBlock',
+  SloganBlock = 'sloganBlock',
+  TitleBlock = 'titleBlock',
+  TrendingTagsBlock = 'trendingTagsBlock',
+  CallToActionBlock = 'callToActionBlock',
+}
