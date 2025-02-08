@@ -14,6 +14,7 @@ export const CallToActionBlock: Block = {
       type: 'text',
       label: '标题',
       defaultValue: 'start your journey',
+      localized: true,
       required: true,
     },
     {
@@ -21,6 +22,7 @@ export const CallToActionBlock: Block = {
       type: 'textarea',
       label: '描述文案',
       defaultValue: 'Explore the cultural treasures of China and experience the unique travel time',
+      localized: true,
       required: true,
     },
     {
@@ -28,6 +30,7 @@ export const CallToActionBlock: Block = {
       type: 'text',
       label: '按钮文案',
       defaultValue: 'Book Now',
+      localized: true,
       required: true,
     },
     icon({

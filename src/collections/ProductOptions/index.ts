@@ -9,7 +9,7 @@ import {
   defaultMonths,
   days,
   defaultDays,
-  applicableCustomers
+  applicableCustomers,
 } from '@/constants/collections.constants'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
 
@@ -35,15 +35,19 @@ const formatNumberRange = (numbers: string[]): string[] => {
 }
 
 const formatMonths = (months: string[]): string => {
-  return formatNumberRange(months).map(range => `${range}月`).join('、')
+  return formatNumberRange(months)
+    .map((range) => `${range}月`)
+    .join('、')
 }
 
 const formatDays = (days: string[]): string => {
-  return formatNumberRange(days).map(range => `星期${range}`).join('、')
+  return formatNumberRange(days)
+    .map((range) => `星期${range}`)
+    .join('、')
 }
 
 const getOverlappingItems = (arr1: string[], arr2: string[]): string[] => {
-  return arr1.filter(item => arr2.includes(item))
+  return arr1.filter((item) => arr2.includes(item))
 }
 
 interface DateConfig {
@@ -56,7 +60,7 @@ const checkDateCoverage = (value: unknown[] | null | undefined): string | true =
 
   // 创建一个映射来跟踪每个月份的每个星期的覆盖情况
   const coverage: Record<string, Set<string>> = {}
-  months.forEach(month => {
+  months.forEach((month) => {
     coverage[month.value] = new Set()
   })
 
@@ -71,12 +75,12 @@ const checkDateCoverage = (value: unknown[] | null | undefined): string | true =
   })
 
   // 检查未完全覆盖的情况
-  const uncovered: { month: string[], days: string[] }[] = []
+  const uncovered: { month: string[]; days: string[] }[] = []
   const monthGroups: Record<string, string[]> = {}
 
   Object.entries(coverage).forEach(([month, coveredDays]) => {
-    const dayValues = days.map(d => d.value)
-    const missingDays = dayValues.filter(day => !coveredDays.has(day))
+    const dayValues = days.map((d) => d.value)
+    const missingDays = dayValues.filter((day) => !coveredDays.has(day))
     if (missingDays.length > 0) {
       // 按照缺失的天数对月份进行分组
       const daysKey = missingDays.sort().join(',')
@@ -91,7 +95,7 @@ const checkDateCoverage = (value: unknown[] | null | undefined): string | true =
   Object.entries(monthGroups).forEach(([daysKey, monthList]) => {
     uncovered.push({
       month: monthList,
-      days: daysKey.split(',')
+      days: daysKey.split(','),
     })
   })
 
@@ -130,7 +134,9 @@ const validateDateOverlap = (value: unknown[] | null | undefined): string | true
       const overlappingDays = getOverlappingItems(date1.days, date2.days)
 
       if (overlappingMonths.length > 0 && overlappingDays.length > 0) {
-        return `第${i + 1}项配置与第${j + 1}项配置在 [${formatMonths(overlappingMonths)}] 的 [${formatDays(overlappingDays)}] 存在重叠，请调整配置`
+        return `第${i + 1}项配置与第${j + 1}项配置在 [${formatMonths(
+          overlappingMonths,
+        )}] 的 [${formatDays(overlappingDays)}] 存在重叠，请调整配置`
       }
     }
   }
@@ -151,17 +157,17 @@ export const ProductOptions: CollectionConfig = {
   hooks: {
     afterChange: [
       async ({ doc, req }) => {
-        const { product } = doc;
+        const { product } = doc
         if (product) {
           // 获取产品及其所有选项
           const productData = await req.payload.findByID({
             collection: 'products',
             id: product as string,
             depth: 1,
-          });
+          })
 
           // 计算最低价格
-          const lowestPrice = calculateProductLowestPrice(productData);
+          const lowestPrice = calculateProductLowestPrice(productData)
 
           // 更新产品的最低价格
           await req.payload.update({
@@ -170,7 +176,7 @@ export const ProductOptions: CollectionConfig = {
             data: {
               lowestPrice,
             },
-          });
+          })
         }
       },
     ],
@@ -225,11 +231,13 @@ export const ProductOptions: CollectionConfig = {
       type: 'text',
       label: '标题',
       required: true,
+      localized: true,
     },
     {
       name: 'summary',
       type: 'textarea',
       label: '摘要',
+      localized: true,
     },
     {
       type: 'tabs',
@@ -296,7 +304,7 @@ export const ProductOptions: CollectionConfig = {
                       label: '可用',
                       defaultValue: true,
                     },
-                  ]
+                  ],
                 },
                 {
                   name: 'timeRange',
@@ -307,6 +315,7 @@ export const ProductOptions: CollectionConfig = {
                       name: 'time',
                       type: 'text',
                       required: true,
+                      localized: true,
                     },
                   ],
                   admin: {
@@ -322,6 +331,7 @@ export const ProductOptions: CollectionConfig = {
                     type: 'number',
                     label: customerTypeLabels[type],
                     required: true,
+                    localized: true,
                     admin: {
                       condition: (data) => data?.applicableCustomers?.includes(type),
                     },

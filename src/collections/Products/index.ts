@@ -50,6 +50,7 @@ export const Products: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
       label: '标题',
     },
     {
@@ -95,6 +96,7 @@ export const Products: CollectionConfig = {
               type: 'textarea',
               label: '简介',
               maxLength: 200,
+              localized: true,
             },
             {
               name: 'aboutThisTour',
@@ -136,6 +138,7 @@ export const Products: CollectionConfig = {
                   name: 'text',
                   type: 'text',
                   required: true,
+                  localized: true,
                 },
               ],
               admin: {
@@ -148,6 +151,7 @@ export const Products: CollectionConfig = {
               label: '详细描述',
               minLength: 500,
               maxLength: 3000,
+              localized: true,
             },
             {
               name: 'includes',
@@ -158,6 +162,7 @@ export const Products: CollectionConfig = {
                   name: 'text',
                   type: 'text',
                   required: true,
+                  localized: true,
                 },
               ],
             },
@@ -170,6 +175,7 @@ export const Products: CollectionConfig = {
                   name: 'text',
                   type: 'text',
                   required: true,
+                  localized: true,
                 },
               ],
             },
@@ -183,6 +189,7 @@ export const Products: CollectionConfig = {
                   type: 'text',
                   required: true,
                   label: '标题',
+                  localized: true,
                 },
                 {
                   name: 'content',
@@ -193,6 +200,7 @@ export const Products: CollectionConfig = {
                       name: 'text',
                       type: 'text',
                       required: true,
+                      localized: true,
                     },
                   ],
                 },

@@ -13,11 +13,13 @@ export const TitleBlock: Block = {
       type: 'text',
       label: '标题',
       required: true,
+      localized: true,
     },
     {
       name: 'subtitle',
       type: 'text',
       label: '副标题',
+      localized: true,
     },
     {
       name: 'variant',

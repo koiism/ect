@@ -9,7 +9,6 @@ import {
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 
-
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
@@ -34,6 +33,7 @@ export const Media: CollectionConfig = {
     {
       name: 'caption',
       type: 'richText',
+      localized: true,
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
           return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]

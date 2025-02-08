@@ -14,18 +14,21 @@ export const SearchBlock: Block = {
       type: 'text',
       label: '标题',
       defaultValue: "Explore China's Magnificent Destinations",
+      localized: true,
     },
     {
       name: 'subtitle',
       type: 'text',
       label: '副标题',
       defaultValue: 'Discover ancient wonders, breathtaking landscapes, and vibrant culture across the Middle Kingdom',
+      localized: true,
     },
     {
       name: 'placeholder',
       type: 'text',
       label: '搜索框占位文本',
       defaultValue: 'Search destinations, attractions, or experiences...',
+      localized: true,
     },
     {
       name: 'trendingSearches',

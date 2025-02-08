@@ -21,7 +21,7 @@ export const FormBlock: Block = {
     {
       name: 'enableIntro',
       type: 'checkbox',
-      label: 'Enable Intro Content',
+      label: '启用介绍内容',
     },
     {
       name: 'introContent',
@@ -39,7 +39,8 @@ export const FormBlock: Block = {
           ]
         },
       }),
-      label: 'Intro Content',
+      label: '介绍内容',
+      localized: true,
     },
   ],
   graphQL: {

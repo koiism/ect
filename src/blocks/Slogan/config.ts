@@ -24,6 +24,7 @@ export const SloganBlock: Block = {
               type: 'text',
               label: '文本',
               required: true,
+              localized: true,
             },
             {
               type: 'checkbox',

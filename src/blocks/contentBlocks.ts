@@ -9,4 +9,15 @@ import { TitleBlock } from './Title/config'
 import { TrendingTagsBlock } from './TrendingTags/config'
 import { CallToActionBlock } from './CallToAction/config'
 
-export const contentBlocks = [Banner, MediaBlock, FormBlock, SearchBlock, ProductBlock, RecommendationBlock, SloganBlock, TitleBlock, TrendingTagsBlock, CallToActionBlock]
+export const contentBlocks = [
+  Banner,
+  MediaBlock,
+  FormBlock,
+  SearchBlock,
+  ProductBlock,
+  RecommendationBlock,
+  SloganBlock,
+  TitleBlock,
+  TrendingTagsBlock,
+  CallToActionBlock,
+]

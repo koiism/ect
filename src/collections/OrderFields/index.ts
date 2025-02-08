@@ -44,6 +44,7 @@ export const OrderFields: CollectionConfig = {
             name: 'label',
             label: '显示名称',
             type: 'text',
+            localized: true,
           },
           {
             name: 'width',
@@ -59,6 +60,7 @@ export const OrderFields: CollectionConfig = {
             name: 'defaultValue',
             label: '默认值',
             type: 'text',
+            localized: true,
             admin: {
               condition: (data, siblingData) => {
                 return ['text', 'textarea', 'number', 'checkbox', 'select'].includes(siblingData.blockType)
@@ -75,12 +77,14 @@ export const OrderFields: CollectionConfig = {
                 label: '显示名称',
                 type: 'text',
                 required: true,
+                localized: true,
               },
               {
                 name: 'value',
                 label: '值',
                 type: 'text',
                 required: true,
+                localized: true,
               }
             ],
             admin: {

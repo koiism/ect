@@ -25,6 +25,7 @@ export const TrendingTagsBlock: Block = {
           type: 'text',
           required: true,
           label: '标签文本',
+          localized: true,
         },
         {
           name: 'isLink',

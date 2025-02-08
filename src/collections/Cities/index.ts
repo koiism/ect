@@ -32,6 +32,7 @@ export const Cities: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
       label: '名称',
     },
     {
