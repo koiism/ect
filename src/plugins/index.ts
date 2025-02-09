@@ -9,7 +9,7 @@ import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import { Page, Post, Product } from '@/payload-types'
+import { City, Page, Post, Product } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 import { translator, copyResolver, googleResolver } from '@payload-enchants/translator'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -22,6 +22,7 @@ import { postBeforeSync } from '@/search/sync/post'
 import { cityBeforeSync } from '@/search/sync/city'
 import { sentryPlugin } from '@payloadcms/plugin-sentry'
 import * as Sentry from '@sentry/nextjs'
+import { payloadSeoPlugin } from './seo'
 
 const generateTitle: GenerateTitle<Post | Page | Product> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Explore China Tour` : 'Explore China Tour'
@@ -82,9 +83,47 @@ export const plugins: Plugin[] = [
   nestedDocsPlugin({
     collections: ['categories'],
   }),
-  seoPlugin({
+  payloadSeoPlugin({
+    collections: ['products', 'posts', 'pages', 'cities'],
     generateTitle,
     generateURL,
+    websiteContext: {
+      topic: '全中国的旅游体验预订平台，提供最丰富的中国自助旅游行程、景点门票、交通票券和在地体验。从热门到独家，旅游商品应有尽有。一站式探索、预订。',
+    },
+    documentContentTransformers: {
+      products: (doc: Product) => ({
+        title: doc.title,
+        content: doc.description || '',
+        summary: doc.summary || '',
+        highlight: (doc.highlights || []).reduce((prev, value, index) => {
+          return `${prev}, ${index + 1}. ${value.text}`
+        }, ''),
+        includes: (doc.includes || []).reduce((prev, value, index) => {
+          return `${prev}, ${index + 1}. ${value.text}`
+        }, ''),
+        exclude: (doc.excludes || []).reduce((prev, value, index) => {
+          return `${prev}, ${index + 1}. ${value.text}`
+        }, ''),
+        importantInfo: (doc.importantInfo || []).reduce((prev, value) => {
+          const content = value.content?.reduce((prev, value, index) => {
+            return `${prev}, ${index + 1}. ${value.text}`
+          }, '')
+          return `${prev}, ${value.title}: ${content}`
+        }, ''),
+      }),
+      posts: async (doc: Post, lexicalToPlainText) => ({
+        title: doc.title,
+        content: (await lexicalToPlainText(doc.content)) || '',
+      }),
+      pages: (doc: Page) => ({
+        title: doc.title,
+        content: JSON.stringify(doc, null, 2),
+      }),
+      cities: (doc: City) => ({
+        title: doc.title,
+      }),
+    },
+    tabbedUI: true,
   }),
   formBuilderPlugin({
     fields: {

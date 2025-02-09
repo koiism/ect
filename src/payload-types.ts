@@ -173,16 +173,23 @@ export interface Page {
     | TrendingTagsBlock
     | CallToActionBlock
   )[];
-  meta?: {
-    title?: string | null;
+  meta: {
+    /**
+     * Keywords that indicate what the page is about. These are used for generating the meta description.
+     */
+    keywords: {
+      keyword: string;
+      id?: string | null;
+    }[];
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
     image?: (string | null) | Media;
+    title?: string | null;
     description?: string | null;
   };
   publishedAt?: string | null;
-  slug?: string | null;
+  slug: string;
   slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -212,14 +219,6 @@ export interface Post {
   };
   relatedPosts?: (string | Post)[] | null;
   categories?: (string | Category)[] | null;
-  meta?: {
-    title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-    description?: string | null;
-  };
   publishedAt?: string | null;
   authors?: (string | User)[] | null;
   populatedAuthors?:
@@ -228,8 +227,23 @@ export interface Post {
         name?: string | null;
       }[]
     | null;
-  slug?: string | null;
+  slug: string;
   slugLock?: boolean | null;
+  meta: {
+    /**
+     * Keywords that indicate what the page is about. These are used for generating the meta description.
+     */
+    keywords: {
+      keyword: string;
+      id?: string | null;
+    }[];
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -993,7 +1007,7 @@ export interface Category {
     | 'HiXCircle'
     | 'HiZoomIn'
     | 'HiZoomOut';
-  slug?: string | null;
+  slug: string;
   slugLock?: boolean | null;
   parent?: (string | null) | Category;
   breadcrumbs?:
@@ -1006,6 +1020,24 @@ export interface Category {
     | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1101,24 +1133,6 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: string;
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
 export interface Product {
@@ -1181,16 +1195,23 @@ export interface Product {
     docs?: (string | ProductOption)[] | null;
     hasNextPage?: boolean | null;
   } | null;
-  meta?: {
-    title?: string | null;
+  slug: string;
+  slugLock?: boolean | null;
+  meta: {
+    /**
+     * Keywords that indicate what the page is about. These are used for generating the meta description.
+     */
+    keywords: {
+      keyword: string;
+      id?: string | null;
+    }[];
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
     image?: (string | null) | Media;
+    title?: string | null;
     description?: string | null;
   };
-  slug?: string | null;
-  slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1207,8 +1228,23 @@ export interface City {
    * 设置城市的主题颜色
    */
   themeColor: string;
-  slug?: string | null;
+  slug: string;
   slugLock?: boolean | null;
+  meta: {
+    /**
+     * Keywords that indicate what the page is about. These are used for generating the meta description.
+     */
+    keywords: {
+      keyword: string;
+      id?: string | null;
+    }[];
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -3027,8 +3063,14 @@ export interface PagesSelect<T extends boolean = true> {
   meta?:
     | T
     | {
-        title?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
         image?: T;
+        title?: T;
         description?: T;
       };
   publishedAt?: T;
@@ -3273,13 +3315,6 @@ export interface PostsSelect<T extends boolean = true> {
   content?: T;
   relatedPosts?: T;
   categories?: T;
-  meta?:
-    | T
-    | {
-        title?: T;
-        image?: T;
-        description?: T;
-      };
   publishedAt?: T;
   authors?: T;
   populatedAuthors?:
@@ -3290,6 +3325,19 @@ export interface PostsSelect<T extends boolean = true> {
       };
   slug?: T;
   slugLock?: T;
+  meta?:
+    | T
+    | {
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        image?: T;
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -3350,15 +3398,21 @@ export interface ProductsSelect<T extends boolean = true> {
       };
   city?: T;
   productOptions?: T;
+  slug?: T;
+  slugLock?: T;
   meta?:
     | T
     | {
-        title?: T;
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
         image?: T;
+        title?: T;
         description?: T;
       };
-  slug?: T;
-  slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -3394,6 +3448,19 @@ export interface CitiesSelect<T extends boolean = true> {
   themeColor?: T;
   slug?: T;
   slugLock?: T;
+  meta?:
+    | T
+    | {
+        keywords?:
+          | T
+          | {
+              keyword?: T;
+              id?: T;
+            };
+        image?: T;
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

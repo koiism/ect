@@ -7,9 +7,12 @@ export const formatSlug = (val: string): string =>
     .toLowerCase()
 
 export const formatSlugHook =
-  (fallback: string): FieldHook =>
-  ({ data, operation, originalDoc, value }) => {
+  (fallback: string, checkboxFieldPath?: string): FieldHook =>
+  ({ data = {}, operation, originalDoc, value }) => {
     if (typeof value === 'string') {
+      if (checkboxFieldPath) {
+        data[checkboxFieldPath] = false
+      }
       return formatSlug(value)
     }
 

@@ -21,14 +21,17 @@ import Noise from '@/components/animations/Noise/Noise'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const isDev = process.env.NODE_ENV === 'development'
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
-        <Script
-          src="https://unpkg.com/react-scan/dist/auto.global.js"
-          strategy="beforeInteractive"
-        />
+        {isDev && (
+          <Script
+            src="https://unpkg.com/react-scan/dist/auto.global.js"
+            strategy="beforeInteractive"
+          />
+        )}
         <Script
           src={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL}
           data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
@@ -62,10 +65,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
   title: {
     template: '%s | Explore China Tour',
-    default: 'Explore China Tour - Your Ultimate Guide to China Travel'
+    default: 'Explore China Tour - Your Ultimate Guide to China Travel',
   },
-  description: 'Discover the best China travel experiences with Explore China Tour. Find tours, attractions, local guides and travel tips for your next adventure in China.',
-  keywords: ['China travel', 'China tours', 'China attractions', 'China travel guide', 'China tourism'],
+  description:
+    'Discover the best China travel experiences with Explore China Tour. Find tours, attractions, local guides and travel tips for your next adventure in China.',
+  keywords: [
+    'China travel',
+    'China tours',
+    'China attractions',
+    'China travel guide',
+    'China tourism',
+  ],
   robots: {
     index: true,
     follow: true,
@@ -97,7 +107,8 @@ export const metadata: Metadata = {
     locale: 'en_US',
     alternateLocale: ['zh_CN'],
     siteName: 'Explore China Tour',
-    description: 'Discover the best China travel experiences with Explore China Tour. Find tours, attractions, local guides and travel tips for your next adventure in China.',
+    description:
+      'Discover the best China travel experiences with Explore China Tour. Find tours, attractions, local guides and travel tips for your next adventure in China.',
   }),
   twitter: {
     card: 'summary_large_image',
@@ -109,8 +120,6 @@ export const metadata: Metadata = {
       { url: '/favicon.ico', sizes: '32x32' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png' },
-    ],
+    apple: [{ url: '/apple-touch-icon.png' }],
   },
 }

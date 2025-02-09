@@ -34,7 +34,7 @@ export const slugField: Slug = (fieldToUse = 'title', overrides = {}) => {
     ...(slugOverrides || {}),
     hooks: {
       // Kept this in for hook or API based updates
-      beforeValidate: [formatSlugHook(fieldToUse)],
+      beforeValidate: [formatSlugHook(fieldToUse, checkBoxField.name)],
     },
     admin: {
       position: 'sidebar',

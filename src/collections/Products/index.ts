@@ -2,14 +2,6 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { slugField } from '@/fields/slug'
-import {
-  MetaDescriptionField,
-  MetaImageField,
-  MetaTitleField,
-  OverviewField,
-  PreviewField,
-} from '@payloadcms/plugin-seo/fields'
-import { Product } from '@/payload-types'
 
 export const uiPopulate = {
   title: true,
@@ -113,6 +105,7 @@ export const Products: CollectionConfig = {
                   name: 'duration',
                   label: '游玩时长(小时)',
                   type: 'number',
+                  defaultValue: 1,
                   required: true,
                 },
                 {
@@ -221,43 +214,6 @@ export const Products: CollectionConfig = {
               collection: 'product-options',
               on: 'product',
             },
-          ],
-        },
-        {
-          name: 'meta',
-          label: 'SEO',
-          fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
-              relationTo: 'media',
-              overrides: {
-                hooks: {
-                  beforeChange: [
-                    async ({ data }) => {
-                      const { images } = data as Product
-                      if (images && images.length > 0) {
-                        return images[0].image
-                      }
-                      return null
-                    },
-                  ],
-                },
-              },
-            }),
-
-            MetaDescriptionField({}),
-            PreviewField({
-              hasGenerateFn: true,
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
           ],
         },
       ],
