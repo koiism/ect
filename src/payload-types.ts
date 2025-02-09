@@ -173,6 +173,9 @@ export interface Page {
     | TrendingTagsBlock
     | CallToActionBlock
   )[];
+  publishedAt?: string | null;
+  slug: string;
+  slugLock?: boolean | null;
   meta: {
     /**
      * Keywords that indicate what the page is about. These are used for generating the meta description.
@@ -188,9 +191,6 @@ export interface Page {
     title?: string | null;
     description?: string | null;
   };
-  publishedAt?: string | null;
-  slug: string;
-  slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -3060,6 +3060,9 @@ export interface PagesSelect<T extends boolean = true> {
         trendingTagsBlock?: T | TrendingTagsBlockSelect<T>;
         callToActionBlock?: T | CallToActionBlockSelect<T>;
       };
+  publishedAt?: T;
+  slug?: T;
+  slugLock?: T;
   meta?:
     | T
     | {
@@ -3073,9 +3076,6 @@ export interface PagesSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
-  publishedAt?: T;
-  slug?: T;
-  slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

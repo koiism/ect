@@ -88,7 +88,8 @@ export const plugins: Plugin[] = [
     generateTitle,
     generateURL,
     websiteContext: {
-      topic: '全中国的旅游体验预订平台，提供最丰富的中国自助旅游行程、景点门票、交通票券和在地体验。从热门到独家，旅游商品应有尽有。一站式探索、预订。',
+      topic:
+        '全中国的旅游体验预订平台，提供最丰富的中国自助旅游行程、景点门票、交通票券和在地体验。从热门到独家，旅游商品应有尽有。一站式探索、预订。',
     },
     documentContentTransformers: {
       products: (doc: Product) => ({
@@ -121,6 +122,7 @@ export const plugins: Plugin[] = [
       }),
       cities: (doc: City) => ({
         title: doc.title,
+        description: `Discover the unique charm of ${doc.title}, explore the culture, food, and attractions of this city.`,
       }),
     },
     tabbedUI: true,

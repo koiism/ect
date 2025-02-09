@@ -8,7 +8,12 @@ type DocWithMeta = {
     title?: string | null
     description?: string | null
     image?: Media | string | null
-    keywords?: string[] | null
+    keywords?:
+      | {
+          keyword: string
+          id?: string | null
+        }[]
+      | null
   }
   title?: string | null
   slug?: string | string[] | null
@@ -57,7 +62,7 @@ export const generateMeta = async (args: {
   const metadata: ExtendedMetadata = {
     title: baseTitle ? `${baseTitle} | Explore China Tour` : 'Explore China Tour',
     description: baseDescription,
-    keywords: doc?.meta?.keywords || [],
+    keywords: doc?.meta?.keywords.map((item) => item.keyword) || [],
   }
 
   // OpenGraph配置
@@ -100,11 +105,11 @@ export const generateMeta = async (args: {
         type: 'article',
         publishedTime: post.createdAt,
         modifiedTime: post.updatedAt,
-        authors: authors.map(author => author.name || ''),
+        authors: authors.map((author) => author.name || ''),
         section: categories[0]?.title || '',
-        tags: categories.map(cat => cat.title || ''),
+        tags: categories.map((cat) => cat.title || ''),
       } as ExtendedOpenGraph)
-      metadata.authors = authors.map(author => ({ name: author.name || '' }))
+      metadata.authors = authors.map((author) => ({ name: author.name || '' }))
       metadata.publishedTime = post.createdAt
       metadata.modifiedTime = post.updatedAt
       break

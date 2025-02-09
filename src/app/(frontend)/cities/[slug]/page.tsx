@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { CityHero } from './components/CityHero'
 import { CityContent } from './components/CityContent'
 import { fetchSearchResults } from '@/search/fetchWithPayload'
+import { generateMeta } from '@/utilities'
 
 type Args = {
   params: Promise<{
@@ -17,7 +18,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug } = await paramsPromise
   const payload = await getPayload({config})
 
-  const { docs: cities } = await payload.find({
+  const { docs: [city] } = await payload.find({
     collection: 'cities',
     where: {
       slug: {
@@ -26,19 +27,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     },
   })
 
-  const city = cities[0]
-
-  if (!city) {
-    return {
-      title: 'City Not Found',
-      description: 'Sorry, we could not find the city you requested.',
-    }
-  }
-
-  return {
-    title: `Explore ${city.title} | City Guide`,
-    description: `Discover the unique charm of ${city.title}, explore the culture, food, and attractions of this city.`,
-  }
+  return generateMeta({ doc: city })
 }
 
 export default async function CityPage({ params: paramsPromise }: Args) {
