@@ -1842,7 +1842,7 @@ export interface ProductSearch {
  */
 export interface RecommendationBlock {
   mode: 'auto' | 'manual';
-  selectedProducts?: (string | Product)[] | null;
+  selectedProducts?: (string | ProductSearch)[] | null;
   filterType?: ('all' | 'city' | 'category') | null;
   city?: (string | null) | City;
   category?: (string | null) | Category;

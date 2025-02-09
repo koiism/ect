@@ -30,7 +30,7 @@ export const RecommendationBlock: Block = {
     {
       name: 'selectedProducts',
       type: 'relationship',
-      relationTo: 'products',
+      relationTo: 'product-search',
       hasMany: true,
       label: '选择产品',
       admin: {
