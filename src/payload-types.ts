@@ -1230,6 +1230,15 @@ export interface City {
   themeColor: string;
   slug: string;
   slugLock?: boolean | null;
+  parent?: (string | null) | City;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | City;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   meta: {
     /**
      * Keywords that indicate what the page is about. These are used for generating the meta description.
@@ -3448,6 +3457,15 @@ export interface CitiesSelect<T extends boolean = true> {
   themeColor?: T;
   slug?: T;
   slugLock?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
   meta?:
     | T
     | {

@@ -81,7 +81,7 @@ export const plugins: Plugin[] = [
     },
   }),
   nestedDocsPlugin({
-    collections: ['categories'],
+    collections: ['categories', 'cities'],
   }),
   payloadSeoPlugin({
     collections: ['products', 'posts', 'pages', 'cities'],
