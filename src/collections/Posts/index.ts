@@ -130,6 +130,10 @@ export const Posts: CollectionConfig<'posts'> = {
           ],
           label: 'Meta',
         },
+        {
+          label: 'SEO',
+          fields: [],
+        },
       ],
     },
     {

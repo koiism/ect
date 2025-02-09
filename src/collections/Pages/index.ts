@@ -59,6 +59,9 @@ export const Pages: CollectionConfig<'pages'> = {
       type: 'text',
       required: true,
       localized: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
       name: 'hideSearchInput',
@@ -86,6 +89,10 @@ export const Pages: CollectionConfig<'pages'> = {
             },
           ],
           label: 'Content',
+        },
+        {
+          label: 'SEO',
+          fields: [],
         },
       ],
     },

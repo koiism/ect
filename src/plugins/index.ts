@@ -125,7 +125,7 @@ export const plugins: Plugin[] = [
         description: `Discover the unique charm of ${doc.title}, explore the culture, food, and attractions of this city.`,
       }),
     },
-    tabbedUI: true,
+    // tabbedUI: true,
   }),
   formBuilderPlugin({
     fields: {

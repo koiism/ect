@@ -216,6 +216,10 @@ export const Products: CollectionConfig = {
             },
           ],
         },
+        {
+          label: 'SEO',
+          fields: [],
+        },
       ],
     },
     ...slugField(),
