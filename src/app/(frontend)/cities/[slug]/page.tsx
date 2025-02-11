@@ -16,9 +16,11 @@ type Args = {
 // Generate dynamic metadata
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug } = await paramsPromise
-  const payload = await getPayload({config})
+  const payload = await getPayload({ config })
 
-  const { docs: [city] } = await payload.find({
+  const {
+    docs: [city],
+  } = await payload.find({
     collection: 'cities',
     where: {
       slug: {
@@ -32,7 +34,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
 export default async function CityPage({ params: paramsPromise }: Args) {
   const { slug } = await paramsPromise
-  const payload = await getPayload({config})
+  const payload = await getPayload({ config })
 
   const { docs: cities } = await payload.find({
     collection: 'cities',
@@ -58,7 +60,7 @@ export default async function CityPage({ params: paramsPromise }: Args) {
     type: 'products',
     where: {
       'city.title': {
-        equals: city?.title,
+        contains: city.title,
       },
     },
     limit: loadMoreLimit,
@@ -68,10 +70,7 @@ export default async function CityPage({ params: paramsPromise }: Args) {
   return (
     <main className="min-h-screen pb-8 sm:pb-16">
       {city.image && typeof city.image !== 'string' && city.image.url && (
-        <CityHero
-          title={city.title}
-          imageUrl={city.image.url}
-        />
+        <CityHero title={city.title} imageUrl={city.image.url} />
       )}
       <CityContent
         title={city.title}
