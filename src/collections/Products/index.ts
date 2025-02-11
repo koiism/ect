@@ -156,7 +156,6 @@ export const Products: CollectionConfig = {
               type: 'textarea',
               label: '详细描述',
               minLength: 500,
-              maxLength: 3000,
               localized: true,
             },
             {
