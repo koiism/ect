@@ -6,6 +6,7 @@ export const productSearchFields: Field[] = [
   {
     name: 'summary',
     type: 'text',
+    localized: true,
     admin: {
       readOnly: true,
     },
@@ -44,6 +45,7 @@ export const productSearchFields: Field[] = [
       {
         name: 'title',
         type: 'text',
+        localized: true,
       },
       {
         name: 'themeColor',

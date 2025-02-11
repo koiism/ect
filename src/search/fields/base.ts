@@ -15,6 +15,7 @@ export const baseSearchFields: Field[] = [
       {
         name: 'title',
         type: 'text',
+        localized: true,
       },
     ],
   },
