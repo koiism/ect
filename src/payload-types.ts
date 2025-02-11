@@ -1142,12 +1142,7 @@ export interface Product {
    * 自动计算的最低价格
    */
   lowestPrice?: number | null;
-  images?:
-    | {
-        image: string | Media;
-        id?: string | null;
-      }[]
-    | null;
+  images: (string | Media)[];
   categories?: (string | Category)[] | null;
   summary?: string | null;
   aboutThisTour: {
@@ -3358,12 +3353,7 @@ export interface PostsSelect<T extends boolean = true> {
 export interface ProductsSelect<T extends boolean = true> {
   title?: T;
   lowestPrice?: T;
-  images?:
-    | T
-    | {
-        image?: T;
-        id?: T;
-      };
+  images?: T;
   categories?: T;
   summary?: T;
   aboutThisTour?:

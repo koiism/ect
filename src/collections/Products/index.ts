@@ -64,16 +64,10 @@ export const Products: CollectionConfig = {
             {
               name: 'images',
               label: '图片',
-              type: 'array',
-              fields: [
-                {
-                  name: 'image',
-                  label: '图片',
-                  type: 'upload',
-                  relationTo: 'media',
-                  required: true,
-                },
-              ],
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+              hasMany: true,
             },
             {
               name: 'categories',
