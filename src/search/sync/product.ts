@@ -27,7 +27,7 @@ export const productBeforeSync: BeforeSync = async (args) => {
     alt: null,
   }
   if (originalDoc.images && originalDoc.images.length > 0) {
-    const firstImage = originalDoc.images[0].image
+    const firstImage = originalDoc.images[0]
     if (firstImage) {
       imageData = {
         url: firstImage.url,
