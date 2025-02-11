@@ -81,11 +81,11 @@ export default async function Product({ params: paramsPromise }: Args) {
           <Carousel>
             <CarouselContent>
               {product.images?.map((item) => (
-                <CarouselItem key={item.id}>
+                <CarouselItem key={(item as Media).url}>
                   <div
                     className="relative aspect-[4/3] bg-center bg-cover bg-no-repeat w-full"
                     style={{
-                      backgroundImage: `url(${(item.image as Media).url})`,
+                      backgroundImage: `url(${(item as Media).url})`,
                     }}
                   />
                 </CarouselItem>
@@ -100,11 +100,11 @@ export default async function Product({ params: paramsPromise }: Args) {
             <Carousel className="w-full">
               <CarouselContent>
                 {product.images?.map((item) => (
-                  <CarouselItem key={item.id}>
+                  <CarouselItem key={(item as Media).url}>
                     <div
                       className="relative aspect-[21/9] rounded-lg bg-center bg-cover bg-no-repeat w-full"
                       style={{
-                        backgroundImage: `url(${(item.image as Media).url})`,
+                        backgroundImage: `url(${(item as Media).url})`,
                       }}
                     />
                   </CarouselItem>
