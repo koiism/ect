@@ -27,13 +27,13 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         {/* 产品图片 */}
         {formData.productOption.product &&
           typeof formData.productOption.product !== 'string' &&
-          formData.productOption.product.images?.[0]?.image && (
+          formData.productOption.product.images?.[0] && (
             <div className="relative aspect-[3/2] mb-4 rounded-lg overflow-hidden hidden md:block">
               <Image
                 src={
-                  typeof formData.productOption.product.images[0].image === 'string'
-                    ? formData.productOption.product.images[0].image
-                    : formData.productOption.product.images[0].image.url || ''
+                  typeof formData.productOption.product.images[0] === 'string'
+                    ? formData.productOption.product.images[0]
+                    : formData.productOption.product.images[0].url || ''
                 }
                 alt={formData.productOption.product.title}
                 className="object-cover w-full h-full"
