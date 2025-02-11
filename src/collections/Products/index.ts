@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { slugField } from '@/fields/slug'
+import { generatePreviewPath, getServerSideURL } from '@/utilities'
 
 export const uiPopulate = {
   title: true,
@@ -23,6 +24,24 @@ export const Products: CollectionConfig = {
     group: '页面',
     useAsTitle: 'title',
     defaultColumns: ['title', 'updatedAt'],
+    livePreview: {
+      url: ({ data }) => {
+        const path = generatePreviewPath({
+          slug: typeof data?.slug === 'string' ? data.slug : '',
+          collection: 'products',
+        })
+
+        return `${getServerSideURL()}${path}`
+      },
+    },
+    preview: (data) => {
+      const path = generatePreviewPath({
+        slug: typeof data?.slug === 'string' ? data.slug : '',
+        collection: 'products',
+      })
+
+      return `${getServerSideURL()}${path}`
+    },
   },
   access: {
     create: authenticated,
