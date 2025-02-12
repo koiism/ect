@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useField, TextareaField, Button } from '@payloadcms/ui'
+import { useField, TextareaField, Button, useLocale } from '@payloadcms/ui'
 
 const AutoSummaryField: React.FC<{
   path: string
@@ -15,6 +15,7 @@ const AutoSummaryField: React.FC<{
   const { value, setValue } = useField<string>({ path })
   const [isGenerating, setIsGenerating] = useState(false)
   const { value: description } = useField<string>({ path: 'description' })
+  const locale = useLocale()
 
   const handleGenerate = async () => {
     try {
@@ -27,6 +28,7 @@ const AutoSummaryField: React.FC<{
         },
         body: JSON.stringify({
           description: description || '',
+          locale: locale.code
         }),
       })
 

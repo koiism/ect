@@ -4,7 +4,7 @@ import { generateOpenAIChatCompletion } from '@/plugins/seo/utils/generateOpenAI
 
 export async function POST(request: Request) {
   try {
-    const { description, highlights, importantInfo } = await request.json()
+    const { description, highlights, importantInfo, locale } = await request.json()
 
     if (!description) {
       return NextResponse.json({ error: '缺少必要的描述参数' }, { status: 400 })
@@ -35,6 +35,7 @@ export async function POST(request: Request) {
           - 涵盖预订须知、使用说明等关键信息
           - 当前已有重要信息如下：${importantInfo}
 
+          使用ISO-2代码"${locale}"指定的语言编写。
           请以JSON格式返回，格式如下，除了返回的JSON之外不要返回其他任何内容：
           {
             "description": "产品详细描述文本",

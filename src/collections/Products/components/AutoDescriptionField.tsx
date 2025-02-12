@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useField, TextareaField, Button } from '@payloadcms/ui'
+import { useField, TextareaField, Button, useLocale } from '@payloadcms/ui'
 
 interface GeneratedContent {
   description: string
@@ -25,6 +25,7 @@ const AutoDescriptionField: React.FC<{
   const [isGenerating, setIsGenerating] = useState(false)
   const { value: highlights, setValue: setHighlights } = useField({ path: 'highlights' })
   const { value: importantInfo, setValue: setImportantInfo } = useField({ path: 'importantInfo' })
+  const locale = useLocale()
 
   const handleGenerate = async () => {
     try {
@@ -39,6 +40,7 @@ const AutoDescriptionField: React.FC<{
           description: value || '',
           highlights,
           importantInfo,
+          locale: locale.code,
         }),
       })
 

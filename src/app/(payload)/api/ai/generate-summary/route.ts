@@ -4,7 +4,7 @@ import { generateOpenAIChatCompletion } from '@/plugins/seo/utils/generateOpenAI
 
 export async function POST(request: Request) {
   try {
-    const { description } = await request.json()
+    const { description, locale } = await request.json()
 
     if (!description) {
       return NextResponse.json({ error: '缺少必要的描述参数' }, { status: 400 })
@@ -22,6 +22,7 @@ export async function POST(request: Request) {
           - 避免过度营销的语气
           - 包含关键的实用信息
           - 确保内容准确且有吸引力
+          - 使用ISO-2代码"${locale}"指定的语言编写。
 
           请直接返回简介文本，不要包含任何其他内容。`,
         },
