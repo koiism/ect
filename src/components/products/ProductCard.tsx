@@ -74,7 +74,7 @@ export const ProductCard: React.FC<Props> = ({ product, className }) => {
       </div>
 
       <div className="flex flex-1 flex-col p-2 sm:p-3">
-        <h3 className="line-clamp-1 md:line-clamp-2 text-sm md:text-lg font-medium text-card-foreground mb-1">
+        <h3 className="line-clamp-1 text-sm md:text-lg font-medium text-card-foreground mb-1">
           {title}
         </h3>
 

@@ -70,7 +70,7 @@ export const getGenerateMetaDescription = (
         - 将长度限制在最多${lengthLimit}个字符。
         - 使用ISO-2代码"${locale}"指定的语言编写。
 
-        重要：检查你的结果并计算使用的字符数（包括空格）。如果描述超过${lengthLimit}个字符，请调整描述以符合所有指南。
+        重要：检查你的结果并计算使用的字符数（包括空格和标点）。如果描述超过${lengthLimit}个字符，请调整描述以符合所有指南。
         不要输出字符数。
 
         页面内容将在下一步提供。`,

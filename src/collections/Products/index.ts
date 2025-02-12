@@ -102,6 +102,11 @@ export const Products: CollectionConfig = {
               label: '简介',
               maxLength: 200,
               localized: true,
+              admin: {
+                components: {
+                  Field: '@/collections/Products/components/AutoSummaryField',
+                },
+              },
             },
             {
               name: 'aboutThisTour',
@@ -157,6 +162,11 @@ export const Products: CollectionConfig = {
               label: '详细描述',
               minLength: 500,
               localized: true,
+              admin: {
+                components: {
+                  Field: '@/collections/Products/components/AutoDescriptionField',
+                },
+              },
             },
             {
               name: 'includes',
