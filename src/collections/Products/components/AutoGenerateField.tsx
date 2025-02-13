@@ -17,6 +17,11 @@ interface GeneratedContent {
     title: string
     content: Array<{ text: string }>
   }>
+  meta: {
+    title: string
+    description: string
+    keywords: Array<{ keyword: string }>
+  }
 }
 
 interface FieldState {
@@ -27,6 +32,7 @@ interface FieldState {
   includes: Product['includes']
   excludes: Product['excludes']
   importantInfo: Product['importantInfo']
+  meta: Product['meta']
 }
 
 const AutoDescriptionField: React.FC<{}> = (props) => {
@@ -56,6 +62,9 @@ const AutoDescriptionField: React.FC<{}> = (props) => {
   const { value: importantInfo, setValue: setImportantInfo } = useField<Product['importantInfo']>({
     path: 'importantInfo',
   })
+  const { value: meta, setValue: setMeta } = useField<Product['meta']>({
+    path: 'meta',
+  })
   const locale = useLocale()
 
   const handleGenerate = async () => {
@@ -72,6 +81,7 @@ const AutoDescriptionField: React.FC<{}> = (props) => {
         includes,
         excludes,
         importantInfo,
+        meta,
         locale: locale.code,
       }
 
@@ -111,6 +121,7 @@ const AutoDescriptionField: React.FC<{}> = (props) => {
       includes,
       excludes,
       importantInfo,
+      meta,
     })
 
     // 应用新内容
@@ -121,6 +132,7 @@ const AutoDescriptionField: React.FC<{}> = (props) => {
     setIncludes(previewContent.includes)
     setExcludes(previewContent.excludes)
     setImportantInfo(previewContent.importantInfo)
+    setMeta(previewContent.meta)
 
     // 清除预览
     setPreviewContent(null)
@@ -137,6 +149,7 @@ const AutoDescriptionField: React.FC<{}> = (props) => {
     setIncludes(previousState.includes)
     setExcludes(previousState.excludes)
     setImportantInfo(previousState.importantInfo)
+    setMeta(previousState.meta)
 
     // 清除之前的状态
     setPreviousState(null)
@@ -205,6 +218,28 @@ const AutoDescriptionField: React.FC<{}> = (props) => {
                   </ul>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-bold">SEO信息</h4>
+            <div className="mt-1 space-y-2">
+              <div>
+                <h5 className="font-semibold">Meta标题</h5>
+                <div>{previewContent.meta.title}</div>
+              </div>
+              <div>
+                <h5 className="font-semibold">Meta描述</h5>
+                <div>{previewContent.meta.description}</div>
+              </div>
+              <div>
+                <h5 className="font-semibold">关键词</h5>
+                <ul className="list-disc pl-4">
+                  {previewContent.meta.keywords.map((item, index) => (
+                    <li key={index}>{item.keyword}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

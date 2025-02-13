@@ -15,10 +15,11 @@ export interface IProductPromptParams extends ICommonPromptParams {
   includes?: Product['includes']
   excludes?: Product['excludes']
   importantInfo?: Product['importantInfo']
+  meta?: Product['meta']
 }
 
 function generateProductPrompts(params: IProductPromptParams) {
-  const { title, summary, description, highlights, includes, excludes, importantInfo, locale, seedContent } = params
+  const { title, summary, description, highlights, includes, excludes, importantInfo, meta, locale, seedContent } = params
   if (!seedContent) {
     throw new Error('缺少必要的描述参数')
   }
@@ -72,6 +73,12 @@ function generateProductPrompts(params: IProductPromptParams) {
           - 涵盖预订须知、使用说明等关键信息
           - 当前重要信息(如有)：${importantInfo}
 
+          8. SEO优化内容：
+          - Meta标题: 30-60字符,包含主要关键词
+          - Meta描述: 50-160字符,概括产品价值,吸引点击
+          - 关键词: 3-5个重要关键词,反映产品特点和目标用户搜索意图
+          - 当前SEO内容(如有)：${meta}
+
           使用ISO-2代码"${locale}"指定的语言编写。
           请以JSON格式返回，格式如下，除了返回的JSON之外不要返回其他任何内容：
           {
@@ -98,7 +105,15 @@ function generateProductPrompts(params: IProductPromptParams) {
                   { "text": "说明2" }
                 ]
               }
-            ]
+            ],
+            "meta": {
+              "title": "SEO标题",
+              "description": "SEO描述",
+              "keywords": [
+                { "keyword": "关键词1" },
+                { "keyword": "关键词2" }
+              ]
+            }
           }`,
       },
       {
