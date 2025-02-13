@@ -109,7 +109,6 @@ export const Products: CollectionConfig = {
               name: 'summary',
               type: 'textarea',
               label: '简介',
-              maxLength: 200,
               localized: true,
             },
             {
@@ -164,7 +163,6 @@ export const Products: CollectionConfig = {
               name: 'description',
               type: 'textarea',
               label: '详细描述',
-              minLength: 500,
               localized: true,
             },
             {
