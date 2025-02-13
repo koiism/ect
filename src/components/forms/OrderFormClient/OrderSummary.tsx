@@ -64,9 +64,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
         {/* 门票信息 */}
         <div className="space-y-3 mb-6">
-          <div className="flex items-center gap-2 text-sm">
-            <Users className="w-4 h-4" />
-            <span className="font-medium">Tickets:</span>
+          <div className="flex gap-1 flex-col">
+            <div className="flex items-center gap-2 text-sm">
+              <Users className="w-4 h-4" />
+              <span className="font-medium">{formData.productOption.title}:</span>
+            </div>
+            <div className="flex justify-between text-sm pl-6 -mt-1 text-muted-foreground">
+              <span className="font-medium">{formData.productOption.summary}</span>
+            </div>
           </div>
           {Object.entries(initialQuantities).map(([type, count]) => {
             if (!count || count <= 0) return null

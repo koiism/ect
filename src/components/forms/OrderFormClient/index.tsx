@@ -11,7 +11,7 @@ import { BookingDetailsStep } from './steps/BookingDetailsStep'
 import { ReviewStep } from './steps/ReviewStep'
 import { OrderSummary } from './OrderSummary'
 import { FormData } from './types'
-import { FORM_STEPS } from './constants'
+import { getFormSteps } from './constants'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
 
@@ -35,6 +35,12 @@ export const OrderFormClient: React.FC<OrderFormClientProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<{ message: string; status?: string } | undefined>()
   const [currentStep, setCurrentStep] = useState(0)
+
+  const requiredInfo = formData.productOption.requiredInfo
+
+  const formSteps = getFormSteps(
+    typeof requiredInfo === 'string' ? false : Boolean(requiredInfo?.length),
+  )
 
   // Create forms based on initial quantities
   const forms = Object.entries(initialQuantities).flatMap(([type, count]) => {
@@ -86,70 +92,76 @@ export const OrderFormClient: React.FC<OrderFormClientProps> = ({
     }
   }, [formMethods])
 
-  const handleNext = useCallback(async (e?: React.MouseEvent) => {
-    e?.preventDefault()
-    const isValid = await formMethods.trigger()
-    if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, FORM_STEPS.length - 1))
-    }
-  }, [formMethods])
+  const handleNext = useCallback(
+    async (e?: React.MouseEvent) => {
+      e?.preventDefault()
+      const isValid = await formMethods.trigger()
+      if (isValid) {
+        setCurrentStep((prev) => Math.min(prev + 1, formSteps.length - 1))
+      }
+    },
+    [formMethods, formSteps.length],
+  )
 
   const handleBack = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 0))
   }, [])
 
-  const handleSubmit = useCallback(async (data: FormData) => {
-    if (currentStep !== FORM_STEPS.length - 1) {
-      return
-    }
-    setIsLoading(true)
-    setError(undefined)
-
-    try {
-      const orderData = {
-        status: OrderStatus.UNPAID,
-        email: data.email,
-        requiredInfo: forms.map((form, index) => ({
-          info: {
-            name: `${form.type} ${form.index}`,
-            value: Object.entries(data.forms[index]).map(([key, value]) => ({
-              field: {
-                key: key.split('_')[1] || key,
-                value: String(value),
-              },
-            })),
-          },
-        })),
+  const handleSubmit = useCallback(
+    async (data: FormData) => {
+      if (currentStep !== formSteps.length - 1) {
+        return
       }
+      setIsLoading(true)
+      setError(undefined)
 
-      const { doc: order } = await payloadClient.updateById({
-        collection: 'orders',
-        id: orderId,
-        data: orderData,
-      })
+      try {
+        const orderData = {
+          status: OrderStatus.UNPAID,
+          email: data.email,
+          requiredInfo: forms.map((form, index) => ({
+            info: {
+              name: `${form.type} ${form.index}`,
+              value: Object.entries(data.forms[index]).map(([key, value]) => ({
+                field: {
+                  key: key.split('_')[1] || key,
+                  value: String(value),
+                },
+              })),
+            },
+          })),
+        }
 
-      if (!order.id) {
-        throw new Error('Order not found')
-      }
-
-      onStatusChange(OrderStatus.UNPAID)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error updating order:', error)
-        setError({
-          message: error.message || 'Something went wrong while updating the order.',
-          status: 'error',
+        const { doc: order } = await payloadClient.updateById({
+          collection: 'orders',
+          id: orderId,
+          data: orderData,
         })
+
+        if (!order.id) {
+          throw new Error('Order not found')
+        }
+
+        onStatusChange(OrderStatus.UNPAID)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error('Error updating order:', error)
+          setError({
+            message: error.message || 'Something went wrong while updating the order.',
+            status: 'error',
+          })
+        }
+      } finally {
+        setIsLoading(false)
       }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [currentStep, forms, orderId, onStatusChange])
+    },
+    [currentStep, forms, orderId, onStatusChange, formSteps.length],
+  )
 
   return (
     <FormProvider {...formMethods}>
       <div className="order-1">
-        <OrderFormSteps currentStep={currentStep} />
+        <OrderFormSteps currentStep={currentStep} steps={formSteps} />
 
         <form onSubmit={formMethods.handleSubmit(handleSubmit)} className="space-y-4 md:space-y-8">
           {error && (
@@ -169,10 +181,12 @@ export const OrderFormClient: React.FC<OrderFormClientProps> = ({
             </div>
             <div className="flex-1 w-full" style={{ marginTop: '0px' }}>
               {currentStep === 0 && <ContactStep />}
-              {currentStep === 1 && (
+              {Boolean(formData.productOption.requiredInfo?.length) && currentStep === 1 && (
                 <BookingDetailsStep forms={forms} productOption={formData.productOption} />
               )}
-              {currentStep === 2 && <ReviewStep forms={forms} />}
+              {currentStep === (formData.productOption.requiredInfo?.length ? 2 : 1) && (
+                <ReviewStep forms={forms} />
+              )}
             </div>
           </div>
 
@@ -182,7 +196,7 @@ export const OrderFormClient: React.FC<OrderFormClientProps> = ({
                 Back
               </Button>
             )}
-            {currentStep < FORM_STEPS.length - 1 ? (
+            {currentStep < formSteps.length - 1 ? (
               <Button type="button" onClick={handleNext}>
                 Continue
               </Button>

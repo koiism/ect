@@ -13,16 +13,6 @@ interface TicketState {
   quantities: Partial<Record<CustomerType, number>>
   isLoading: boolean
   productOptions: ProductOption[] | undefined
-
-  // Derived state
-  selectedTicket: ProductOption | undefined
-  availableTimeRanges: Array<{ id: string | null; time: string }>
-  selectedDatePrices: Partial<Record<CustomerType, number>>
-  totalPrice: number
-  lowestPrices: Partial<Record<CustomerType, number>>
-  allCustomerTypes: CustomerType[]
-  isValid: boolean
-  statusMessage: string | null
 }
 
 interface TicketActions {
@@ -33,87 +23,6 @@ interface TicketActions {
   updateQuantity: (type: CustomerType, value: number) => void
   setLoading: (loading: boolean) => void
   reset: () => void
-  isDateDisabled: (date: Date) => boolean
-}
-
-const calculateDerivedState = (state: Omit<TicketState, keyof Omit<TicketState, 'selectedOption' | 'date' | 'selectedTime' | 'quantities' | 'isLoading' | 'productOptions'>>) => {
-  const selectedTicket = state.productOptions?.find(option => option.id === state.selectedOption)
-  const selectedValidDate = selectedTicket?.availableDate.filter(
-    dateConfig => dateConfig.available
-  )
-
-  let availableTimeRanges: Array<{ id: string | null; time: string }> = []
-  let selectedDatePrices: Partial<Record<CustomerType, number>> = {}
-
-  if (state.date && selectedValidDate) {
-    const month = (state.date.getMonth() + 1).toString()
-    const day = (state.date.getDay() || 7).toString()
-
-    const matchingDate = selectedValidDate.find(dateConfig =>
-      dateConfig.months.includes(month as any) &&
-      dateConfig.days.includes(day as any)
-    )
-
-    if (matchingDate?.timeRange) {
-      availableTimeRanges = matchingDate.timeRange.map((range) => ({
-        id: range.id || null,
-        time: range.time,
-      }))
-    }
-
-    if (matchingDate?.price) {
-      const validPrices: Partial<Record<CustomerType, number>> = {}
-      Object.entries(matchingDate.price).forEach(([key, value]) => {
-        if (typeof value === 'number') {
-          validPrices[key as CustomerType] = value
-        }
-      })
-      selectedDatePrices = validPrices
-    }
-  }
-
-  const totalPrice = Object.entries(state.quantities).reduce((total, [type, quantity]) => {
-    const price = selectedDatePrices[type as CustomerType] || 0
-    return total + price * (quantity || 0)
-  }, 0)
-
-  const lowestPrices = calculateLowestPrices(selectedTicket, selectedValidDate)
-
-  const allCustomerTypes = selectedTicket?.applicableCustomers || []
-
-  const totalQuantity = Object.values(state.quantities).reduce(
-    (sum, quantity) => sum + (quantity || 0),
-    0
-  )
-
-  const isValid = Boolean(
-    state.selectedOption &&
-    state.date &&
-    totalQuantity > 0 &&
-    (availableTimeRanges.length === 0 || state.selectedTime)
-  )
-
-  let statusMessage: string | null = null
-  if (!selectedTicket) {
-    statusMessage = 'Please select a ticket type'
-  } else if (!state.date) {
-    statusMessage = 'Please select a date'
-  } else if (availableTimeRanges.length > 0 && !state.selectedTime) {
-    statusMessage = 'Please select a time range'
-  } else if (totalQuantity === 0) {
-    statusMessage = 'Please select at least one visitor'
-  }
-
-  return {
-    selectedTicket,
-    availableTimeRanges,
-    selectedDatePrices,
-    totalPrice,
-    lowestPrices,
-    allCustomerTypes,
-    isValid,
-    statusMessage,
-  }
 }
 
 export const useTicketStore = create<TicketState & TicketActions>((set, get) => ({
@@ -125,117 +34,176 @@ export const useTicketStore = create<TicketState & TicketActions>((set, get) => 
   isLoading: false,
   productOptions: undefined,
 
-  // Derived state (initial values)
-  selectedTicket: undefined,
-  availableTimeRanges: [],
-  selectedDatePrices: {},
-  totalPrice: 0,
-  lowestPrices: {},
-  allCustomerTypes: [],
-  isValid: false,
-  statusMessage: null,
-
   // Actions
   initialize: (options) => {
     const selectedOption = options.length === 1 ? options[0].id : ''
     set({
       productOptions: options,
       selectedOption,
-      ...calculateDerivedState({
-        selectedOption,
-        date: undefined,
-        selectedTime: '',
-        quantities: {},
-        isLoading: false,
-        productOptions: options,
-      }),
     })
   },
 
-  selectOption: (option) => set((state) => ({
-    selectedOption: option,
-    ...calculateDerivedState({ ...state, selectedOption: option }),
-  })),
+  selectOption: (option) => set({ selectedOption: option }),
 
-  selectDate: (date) => set((state) => ({
-    date,
-    ...calculateDerivedState({ ...state, date }),
-  })),
+  selectDate: (date) => set({ date }),
 
-  selectTime: (time) => set((state) => ({
-    selectedTime: time,
-    ...calculateDerivedState({ ...state, selectedTime: time }),
-  })),
+  selectTime: (time) => set({ selectedTime: time }),
 
-  updateQuantity: (type, value) => set((state) => {
-    const newQuantities = {
-      ...state.quantities,
-      [type]: value,
-    }
-    return {
-      quantities: newQuantities,
-      ...calculateDerivedState({ ...state, quantities: newQuantities }),
-    }
-  }),
+  updateQuantity: (type, value) =>
+    set((state) => ({
+      quantities: {
+        ...state.quantities,
+        [type]: value,
+      },
+    })),
 
   setLoading: (loading) => set({ isLoading: loading }),
 
-  reset: () => set((state) => ({
-    selectedOption: '',
-    date: undefined,
-    selectedTime: '',
-    quantities: {},
-    isLoading: false,
-    ...calculateDerivedState({
+  reset: () =>
+    set({
       selectedOption: '',
       date: undefined,
       selectedTime: '',
       quantities: {},
       isLoading: false,
-      productOptions: state.productOptions,
     }),
-  })),
-
-  isDateDisabled: (date: Date) => {
-    const state = get()
-    const selectedTicket = state.selectedTicket
-    const selectedValidDate = selectedTicket?.availableDate.filter(
-      dateConfig => dateConfig.available
-    )
-
-    if (!selectedTicket) return true
-
-    const month = (date.getMonth() + 1).toString()
-    const day = (date.getDay() || 7).toString()
-
-    const isMonthAvailable = selectedValidDate?.some(dateConfig =>
-      dateConfig.months.includes(month as any)
-    )
-
-    const isDayAvailable = selectedValidDate?.some(dateConfig =>
-      dateConfig.days.includes(day as any)
-    )
-
-    const isNotPastDate = date >= new Date(new Date().setHours(0, 0, 0, 0))
-
-    return !isMonthAvailable || !isDayAvailable || !isNotPastDate
-  },
 }))
 
+// Selectors
+const selectedTicketSelector = (state: TicketState) =>
+  state.productOptions?.find((option) => option.id === state.selectedOption)
+
+const selectedValidDateSelector = (state: TicketState) => {
+  const selectedTicket = selectedTicketSelector(state)
+  return selectedTicket?.availableDate.filter((dateConfig) => dateConfig.available)
+}
+
+const availableTimeRangesSelector = (state: TicketState) => {
+  const selectedValidDate = selectedValidDateSelector(state)
+  if (!state.date || !selectedValidDate) return []
+
+  const month = (state.date.getMonth() + 1).toString()
+  const day = (state.date.getDay() || 7).toString()
+
+  const matchingDate = selectedValidDate.find(
+    (dateConfig) =>
+      dateConfig.months.includes(month as any) && dateConfig.days.includes(day as any),
+  )
+
+  return matchingDate?.timeRange?.map((range) => ({
+    id: range.id || null,
+    time: range.time,
+  })) || []
+}
+
+const selectedDatePricesSelector = (state: TicketState) => {
+  const selectedValidDate = selectedValidDateSelector(state)
+  if (!state.date || !selectedValidDate) return {}
+
+  const month = (state.date.getMonth() + 1).toString()
+  const day = (state.date.getDay() || 7).toString()
+
+  const matchingDate = selectedValidDate.find(
+    (dateConfig) =>
+      dateConfig.months.includes(month as any) && dateConfig.days.includes(day as any),
+  )
+
+  if (!matchingDate?.price) return {}
+
+  const validPrices: Partial<Record<CustomerType, number>> = {}
+  Object.entries(matchingDate.price).forEach(([key, value]) => {
+    if (typeof value === 'number') {
+      validPrices[key as CustomerType] = value
+    }
+  })
+  return validPrices
+}
+
+const totalPriceSelector = (state: TicketState) => {
+  const selectedDatePrices = selectedDatePricesSelector(state)
+  return Object.entries(state.quantities).reduce((total, [type, quantity]) => {
+    const price = selectedDatePrices[type as CustomerType] || 0
+    return total + price * (quantity || 0)
+  }, 0)
+}
+
+const lowestPricesSelector = (state: TicketState) => {
+  const selectedTicket = selectedTicketSelector(state)
+  const selectedValidDate = selectedValidDateSelector(state)
+  return calculateLowestPrices(selectedTicket, selectedValidDate)
+}
+
+const allCustomerTypesSelector = (state: TicketState) =>
+  selectedTicketSelector(state)?.applicableCustomers || []
+
+const isValidSelector = (state: TicketState) => {
+  const availableTimeRanges = availableTimeRangesSelector(state)
+  const totalQuantity = Object.values(state.quantities).reduce(
+    (sum, quantity) => sum + (quantity || 0),
+    0,
+  )
+
+  return Boolean(
+    state.selectedOption &&
+      state.date &&
+      totalQuantity > 0 &&
+      (availableTimeRanges.length === 0 || state.selectedTime),
+  )
+}
+
+const statusMessageSelector = (state: TicketState) => {
+  const selectedTicket = selectedTicketSelector(state)
+  const availableTimeRanges = availableTimeRangesSelector(state)
+  const totalQuantity = Object.values(state.quantities).reduce(
+    (sum, quantity) => sum + (quantity || 0),
+    0,
+  )
+
+  if (!selectedTicket) return 'Please select a ticket type'
+  if (!state.date) return 'Please select a date'
+  if (availableTimeRanges.length > 0 && !state.selectedTime) return 'Please select a time range'
+  if (totalQuantity === 0) return 'Please select at least one visitor'
+  return null
+}
+
+const isDateDisabledSelector = (state: TicketState) => (date: Date) => {
+  const selectedTicket = selectedTicketSelector(state)
+  const selectedValidDate = selectedTicket?.availableDate.filter(
+    (dateConfig) => dateConfig.available,
+  )
+
+  if (!selectedTicket) return true
+
+  const month = (date.getMonth() + 1).toString()
+  const day = (date.getDay() || 7).toString()
+
+  const isMonthAvailable = selectedValidDate?.some((dateConfig) =>
+    dateConfig.months.includes(month as any),
+  )
+
+  const isDayAvailable = selectedValidDate?.some((dateConfig) =>
+    dateConfig.days.includes(day as any),
+  )
+
+  const isNotPastDate = date >= new Date(new Date().setHours(0, 0, 0, 0))
+
+  return !isMonthAvailable || !isDayAvailable || !isNotPastDate
+}
+
 // Export hooks for accessing state
-export const useSelectedTicket = () => useTicketStore((state) => state.selectedTicket)
-export const useAvailableTimeRanges = () => useTicketStore((state) => state.availableTimeRanges)
-export const useSelectedDatePrices = () => useTicketStore((state) => state.selectedDatePrices)
-export const useTotalPrice = () => useTicketStore((state) => state.totalPrice)
-export const useLowestPrices = () => useTicketStore((state) => state.lowestPrices)
-export const useAllCustomerTypes = () => useTicketStore((state) => state.allCustomerTypes)
-export const useIsDateDisabled = () => useTicketStore((state) => state.isDateDisabled)
-export const useIsValid = () => useTicketStore((state) => state.isValid)
-export const useStatusMessage = () => useTicketStore((state) => state.statusMessage)
+export const useSelectedTicket = () => useTicketStore(selectedTicketSelector)
+export const useAvailableTimeRanges = () => useTicketStore(availableTimeRangesSelector)
+export const useSelectedDatePrices = () => useTicketStore(selectedDatePricesSelector)
+export const useTotalPrice = () => useTicketStore(totalPriceSelector)
+export const useLowestPrices = () => useTicketStore(lowestPricesSelector)
+export const useAllCustomerTypes = () => useTicketStore(allCustomerTypesSelector)
+export const useIsValid = () => useTicketStore(isValidSelector)
+export const useStatusMessage = () => useTicketStore(statusMessageSelector)
+export const useIsDateDisabled = () => useTicketStore(isDateDisabledSelector)
 
 export const createOrder = async () => {
   const state = useTicketStore.getState()
-  const selectedTicket = state.selectedTicket
+  const selectedTicket = selectedTicketSelector(state)
 
   if (!selectedTicket?.requiredInfo) return null
 

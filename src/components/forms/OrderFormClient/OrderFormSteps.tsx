@@ -1,20 +1,21 @@
 import React from 'react'
 import { cn } from '@/utilities/cn'
 import { CheckCircle2 } from 'lucide-react'
-import { FORM_STEPS } from './constants'
+import type { FormStep } from './constants'
 
 interface OrderFormStepsProps {
   currentStep: number
+  steps: readonly FormStep[]
 }
 
-export const OrderFormSteps: React.FC<OrderFormStepsProps> = ({ currentStep }) => {
+export const OrderFormSteps: React.FC<OrderFormStepsProps> = ({ currentStep, steps }) => {
   return (
     <div className="md:mb-8 mb-4">
       <div className="hidden sm:flex justify-between">
-        {FORM_STEPS.map((step, index) => (
+        {steps.map((step, index) => (
           <div
             key={step.id}
-            className={cn('flex items-center', index < FORM_STEPS.length - 1 && 'flex-1')}
+            className={cn('flex items-center', index < steps.length - 1 && 'flex-1')}
           >
             <div className="flex flex-col items-center flex-1">
               <div
@@ -33,7 +34,7 @@ export const OrderFormSteps: React.FC<OrderFormStepsProps> = ({ currentStep }) =
                 {step.title}
               </span>
             </div>
-            {index < FORM_STEPS.length - 1 && (
+            {index < steps.length - 1 && (
               <div
                 className={cn(
                   'h-0.5 w-full',
@@ -46,7 +47,7 @@ export const OrderFormSteps: React.FC<OrderFormStepsProps> = ({ currentStep }) =
       </div>
       <div className="sm:hidden">
         <p className="text-sm font-medium">
-          步骤 {currentStep + 1} / {FORM_STEPS.length}: {FORM_STEPS[currentStep].title}
+          Step {currentStep + 1} / {steps.length}: {steps[currentStep].title}
         </p>
       </div>
     </div>
