@@ -41,6 +41,7 @@ import {
   createOrder,
   CustomerType,
 } from '@/stores/ticketStore'
+import { toast } from '@payloadcms/ui'
 
 // 抽离状态消息组件
 const StatusMessage = memo(({ message }: { message: string | null }) => {
@@ -159,8 +160,9 @@ export function TicketCard({ productOptions }: TicketCardProps) {
       }
     } catch (error) {
       console.error(error)
+      toast.error('Failed to check availability')
     } finally {
-      setIsLoading(false)
+      // setIsLoading(false)
     }
   }
 
