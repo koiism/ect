@@ -1,16 +1,15 @@
 import { Button } from '@/components/ui/button'
-import { Icon } from '@/components/Icon'
-import { CustomerType } from '@/hooks/useTicketSelection'
 import { Input } from '@/components/ui/input'
+import { CustomerType } from '@/stores/ticketStore'
 
 interface CustomerTypeQuantityProps {
-  customerType: string
+  customerType: CustomerType
   quantity: number
   price: number
   lowestPrice: number
   onQuantityChange: (type: CustomerType, action: 'increase' | 'decrease') => void
   onQuantityInput: (type: CustomerType, value: number) => void
-  hasDate?: boolean
+  hasDate: boolean
 }
 
 export function CustomerTypeQuantity({
@@ -25,7 +24,7 @@ export function CustomerTypeQuantity({
   return (
     <div className="flex items-center justify-between py-2">
       <div className="flex flex-col">
-        <span className="font-medium">{customerType}</span>
+        <span className="text-sm font-medium">{customerType}</span>
         <span className="text-sm text-muted-foreground">
           {hasDate ? `$${price}` : `From $${lowestPrice}`}
         </span>
@@ -34,24 +33,24 @@ export function CustomerTypeQuantity({
         <Button
           variant="outline"
           size="icon"
-          onClick={() => onQuantityChange(customerType as CustomerType, 'decrease')}
-          disabled={quantity === 0}
+          className="h-8 w-8"
+          onClick={() => onQuantityChange(customerType, 'decrease')}
         >
-          <Icon name="HiMinus" className="h-4 w-4" />
+          -
         </Button>
         <Input
           type="number"
-          className="w-12 text-center"
           value={quantity}
-          onChange={(e) => onQuantityInput(customerType as CustomerType, parseInt(e.target.value) || 0)}
-          min={0}
+          onChange={(e) => onQuantityInput(customerType, parseInt(e.target.value) || 0)}
+          className="h-8 w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <Button
           variant="outline"
           size="icon"
-          onClick={() => onQuantityChange(customerType as CustomerType, 'increase')}
+          className="h-8 w-8"
+          onClick={() => onQuantityChange(customerType, 'increase')}
         >
-          <Icon name="HiPlus" className="h-4 w-4" />
+          +
         </Button>
       </div>
     </div>

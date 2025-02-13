@@ -15,10 +15,9 @@ import { format } from 'date-fns'
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react'
 import { cn } from '@/utilities/cn'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { TicketSelection, useTicketSelection } from '@/hooks/useTicketSelection'
 import { useRouter } from 'next/navigation'
 import { CustomerTypeQuantity } from './CustomerTypeQuantity'
-import { useState, useMemo, useCallback, memo } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { Tracker } from '@/tracking'
 import {
   Drawer,
@@ -28,6 +27,20 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import {
+  useTicketStore,
+  useSelectedTicket,
+  useAvailableTimeRanges,
+  useSelectedDatePrices,
+  useTotalPrice,
+  useLowestPrices,
+  useAllCustomerTypes,
+  useIsDateDisabled,
+  useIsValid,
+  useStatusMessage,
+  createOrder,
+  CustomerType,
+} from '@/stores/ticketStore'
 
 // 抽离状态消息组件
 const StatusMessage = memo(({ message }: { message: string | null }) => {
@@ -51,18 +64,15 @@ const SubmitButton = memo(
     isValid,
     isLoading,
     onClick,
-    formattedSelection,
   }: {
     isValid: boolean
     isLoading: boolean
     onClick: () => void
-    formattedSelection: any
   }) => (
     <Tracker
       click={{
         buttonClick: {
           buttonName: 'check_availability',
-          extra: formattedSelection,
         },
       }}
     >
@@ -107,58 +117,40 @@ interface TicketCardProps {
   productOptions: {
     docs?: ProductOption[]
   }
-  value?: TicketSelection
-  onChange?: (selection: TicketSelection) => void
 }
 
-export function TicketCard({ productOptions, value, onChange }: TicketCardProps) {
+export function TicketCard({ productOptions }: TicketCardProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+
   const {
-    selection,
-    selectedTicket,
-    availableTimeRanges,
-    selectedDatePrices,
-    totalPrice,
-    lowestPrices,
-    allCustomerTypes,
-    isDateDisabled,
-    updateSelection,
-    handleQuantityChange,
-    isValid,
-    createOrder,
-    formattedSelection,
-  } = useTicketSelection({ productOptions, value, onChange })
+    selectedOption,
+    date,
+    selectedTime,
+    quantities,
+    selectOption,
+    selectDate,
+    selectTime,
+    updateQuantity,
+  } = useTicketStore()
 
-  // 使用useMemo缓存状态消息计算
-  const statusMessage = useMemo(() => {
-    if (!selectedTicket) {
-      return 'Please select a ticket type'
-    }
-    if (!formattedSelection.date) {
-      return 'Please select a date'
-    }
-    if (availableTimeRanges.length > 0 && !formattedSelection.selectedTime) {
-      return 'Please select a time range'
-    }
-    const totalQuantity = Object.values(selection.quantities).reduce(
-      (sum, quantity) => sum + quantity,
-      0,
-    )
-    if (totalQuantity === 0) {
-      return 'Please select at least one visitor'
-    }
-    return null
-  }, [
-    selectedTicket,
-    formattedSelection.date,
-    formattedSelection.selectedTime,
-    availableTimeRanges.length,
-    selection.quantities,
-  ])
+  const selectedTicket = useSelectedTicket()
+  const availableTimeRanges = useAvailableTimeRanges()
+  const selectedDatePrices = useSelectedDatePrices()
+  const totalPrice = useTotalPrice()
+  const lowestPrices = useLowestPrices()
+  const allCustomerTypes = useAllCustomerTypes()
+  const isDateDisabled = useIsDateDisabled()
+  const isValid = useIsValid()
+  const statusMessage = useStatusMessage()
 
-  // 使用useCallback优化事件处理函数
-  const handleCheckAvailability = useCallback(async () => {
+  useEffect(() => {
+    if (productOptions.docs) {
+      useTicketStore.getState().initialize(productOptions.docs)
+    }
+  }, [productOptions.docs])
+
+  const handleCheckAvailability = async () => {
     try {
       setIsLoading(true)
       const orderId = await createOrder()
@@ -167,53 +159,28 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
       }
     } catch (error) {
       console.error(error)
+    } finally {
       setIsLoading(false)
     }
-  }, [createOrder, router])
+  }
 
-  // 使用useCallback优化选择处理函数
-  const handleTicketTypeSelect = useCallback(
-    (value: string) => {
-      updateSelection({ selectedOption: value })
-    },
-    [updateSelection],
+  const handleQuantityChange = (type: CustomerType, action: 'increase' | 'decrease') => {
+    const current = quantities[type] || 0
+    const newQuantity = action === 'increase' ? current + 1 : Math.max(0, current - 1)
+    updateQuantity(type, newQuantity)
+  }
+
+  const shouldShowTotal = Boolean(
+    selectedTicket &&
+      date &&
+      Object.values(quantities).some((quantity) => (quantity ?? 0) > 0),
   )
 
-  const handleDateSelect = useCallback(
-    (date: Date | undefined) => {
-      updateSelection({ date })
-    },
-    [updateSelection],
-  )
-
-  const handleTimeSelect = useCallback(
-    (time: string) => {
-      updateSelection({ selectedTime: time })
-    },
-    [updateSelection],
-  )
-
-  // 使用useMemo缓存是否显示总价
-  const shouldShowTotal = useMemo(
-    () =>
-      Boolean(
-        selectedTicket &&
-          selection.date &&
-          Object.values(selection.quantities).some((quantity) => (quantity ?? 0) > 0),
-      ),
-    [selectedTicket, selection.date, selection.quantities],
-  )
-
-  // 使用useMemo缓存可选时间段渲染
-  const timeRangeOptions = useMemo(
-    () =>
-      availableTimeRanges.map((timeRange) => ({
-        id: timeRange.id,
-        time: timeRange.time,
-        isSelected: selection.selectedTime === timeRange.time,
-      })),
-    [availableTimeRanges, selection.selectedTime],
-  )
+  const timeRangeOptions = availableTimeRanges.map((timeRange) => ({
+    id: timeRange.id,
+    time: timeRange.time,
+    isSelected: selectedTime === timeRange.time,
+  }))
 
   const renderMobileContent = () => (
     <div className="space-y-4 md:hidden">
@@ -223,8 +190,8 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
           <DrawerTrigger asChild>
             <Button variant="outline" className="w-full justify-between">
               <span className="text-muted-foreground">
-                {selection.selectedOption
-                  ? productOptions?.docs?.find((opt) => opt.id === selection.selectedOption)?.title
+                {selectedOption
+                  ? productOptions?.docs?.find((opt) => opt.id === selectedOption)?.title
                   : 'Select a ticket type'}
               </span>
               <CalendarIcon className="h-4 w-4" />
@@ -238,9 +205,9 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
               {productOptions?.docs?.map((option: ProductOption) => (
                 <DrawerClose asChild key={option.id}>
                   <Button
-                    variant={selection.selectedOption === option.id ? 'default' : 'outline'}
+                    variant={selectedOption === option.id ? 'default' : 'outline'}
                     className="w-full justify-start"
-                    onClick={() => handleTicketTypeSelect(option.id)}
+                    onClick={() => selectOption(option.id)}
                   >
                     {option.title}
                   </Button>
@@ -255,7 +222,7 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
           <DrawerTrigger asChild>
             <Button variant="outline" className="w-full justify-between" disabled={!selectedTicket}>
               <span className="text-muted-foreground">
-                {selection.date ? format(selection.date, 'PPP') : 'Select a date'}
+                {date ? format(date, 'PPP') : 'Select a date'}
               </span>
               <CalendarIcon className="h-4 w-4" />
             </Button>
@@ -265,22 +232,18 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
               <DrawerTitle>Select a date</DrawerTitle>
             </DrawerHeader>
             <div className="p-4">
-              <DatePicker
-                date={selection.date}
-                onSelect={handleDateSelect}
-                isDisabled={isDateDisabled}
-              />
+              <DatePicker date={date} onSelect={selectDate} isDisabled={isDateDisabled} />
             </div>
           </DrawerContent>
         </Drawer>
 
         {/* 时间选择 */}
-        {selectedTicket && selection.date && timeRangeOptions.length > 0 && (
+        {selectedTicket && date && timeRangeOptions.length > 0 && (
           <Drawer>
             <DrawerTrigger asChild>
               <Button variant="outline" className="w-full justify-between">
                 <span className="text-muted-foreground">
-                  {selection.selectedTime || 'Select a time range'}
+                  {selectedTime || 'Select a time range'}
                 </span>
                 <CalendarIcon className="h-4 w-4" />
               </Button>
@@ -295,7 +258,7 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
                     <Button
                       variant={isSelected ? 'default' : 'outline'}
                       className="w-full justify-start"
-                      onClick={() => handleTimeSelect(time)}
+                      onClick={() => selectTime(time)}
                     >
                       {time}
                     </Button>
@@ -312,19 +275,12 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
             <CustomerTypeQuantity
               key={customerType}
               customerType={customerType}
-              quantity={selection.quantities[customerType] || 0}
+              quantity={quantities[customerType] || 0}
               price={selectedDatePrices[customerType] || 0}
               lowestPrice={lowestPrices[customerType] || 0}
               onQuantityChange={handleQuantityChange}
-              onQuantityInput={(type, value) =>
-                updateSelection({
-                  quantities: {
-                    ...selection.quantities,
-                    [type]: value,
-                  },
-                })
-              }
-              hasDate={Boolean(selection.date)}
+              onQuantityInput={(type, value) => updateQuantity(type, value)}
+              hasDate={Boolean(date)}
             />
           ))}
         </div>
@@ -335,10 +291,9 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
       {shouldShowTotal && <TotalPrice price={totalPrice} />}
 
       <SubmitButton
-        isValid={Boolean(isValid)}
+        isValid={isValid}
         isLoading={isLoading}
         onClick={handleCheckAvailability}
-        formattedSelection={formattedSelection}
       />
     </div>
   )
@@ -346,7 +301,7 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
   const renderDesktopContent = () => (
     <div className="space-y-4 hidden md:block">
       <div className="space-y-2">
-        <Select value={selection.selectedOption} onValueChange={handleTicketTypeSelect}>
+        <Select value={selectedOption} onValueChange={selectOption}>
           <SelectTrigger>
             <SelectValue placeholder="Select a ticket type" />
           </SelectTrigger>
@@ -374,27 +329,23 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
                   variant="outline"
                   className={cn(
                     'w-full justify-start text-left font-normal',
-                    !selection.date && 'text-muted-foreground',
+                    !date && 'text-muted-foreground',
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selection.date ? format(selection.date, 'PPP') : <span>Select a date</span>}
+                  {date ? format(date, 'PPP') : <span>Select a date</span>}
                 </Button>
               ) : (
                 <div></div>
               )}
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <DatePicker
-                date={selection.date}
-                onSelect={handleDateSelect}
-                isDisabled={isDateDisabled}
-              />
+              <DatePicker date={date} onSelect={selectDate} isDisabled={isDateDisabled} />
             </PopoverContent>
           </Popover>
 
-          {selectedTicket && selection.date && timeRangeOptions.length > 0 && (
-            <Select value={selection.selectedTime} onValueChange={handleTimeSelect}>
+          {selectedTicket && date && timeRangeOptions.length > 0 && (
+            <Select value={selectedTime} onValueChange={selectTime}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a time range" />
               </SelectTrigger>
@@ -413,19 +364,12 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
               <CustomerTypeQuantity
                 key={customerType}
                 customerType={customerType}
-                quantity={selection.quantities[customerType] || 0}
+                quantity={quantities[customerType] || 0}
                 price={selectedDatePrices[customerType] || 0}
                 lowestPrice={lowestPrices[customerType] || 0}
                 onQuantityChange={handleQuantityChange}
-                onQuantityInput={(type, value) =>
-                  updateSelection({
-                    quantities: {
-                      ...selection.quantities,
-                      [type]: value,
-                    },
-                  })
-                }
-                hasDate={Boolean(selection.date)}
+                onQuantityInput={(type, value) => updateQuantity(type, value)}
+                hasDate={Boolean(date)}
               />
             ))}
           </div>
@@ -437,10 +381,9 @@ export function TicketCard({ productOptions, value, onChange }: TicketCardProps)
       {shouldShowTotal && <TotalPrice price={totalPrice} />}
 
       <SubmitButton
-        isValid={Boolean(isValid)}
+        isValid={isValid}
         isLoading={isLoading}
         onClick={handleCheckAvailability}
-        formattedSelection={formattedSelection}
       />
     </div>
   )
