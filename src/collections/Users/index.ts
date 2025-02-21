@@ -20,7 +20,9 @@ export const Users: CollectionConfig = {
     read: authenticated,
     update: authenticated,
   },
-  auth: true,
+  auth: {
+    useAPIKey: true,
+  },
   fields: [
     {
       name: 'name',
