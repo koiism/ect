@@ -94,7 +94,6 @@ export const Products: CollectionConfig = {
               label: '图片',
               type: 'upload',
               relationTo: 'media',
-              required: true,
               hasMany: true,
             },
             {
