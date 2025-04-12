@@ -10,7 +10,7 @@ export const revalidateProduct: CollectionAfterChangeHook<Product> = ({
   req: { payload },
 }) => {
   if (doc._status === 'published') {
-    const path = doc.slug
+    const path = `/products/${doc.slug}`
 
     payload.logger.info(`Revalidating product at path: ${path}`)
 
@@ -20,7 +20,7 @@ export const revalidateProduct: CollectionAfterChangeHook<Product> = ({
 
   // If the product was previously published, we need to revalidate the old path
   if (previousDoc?._status === 'published' && doc._status !== 'published') {
-    const oldPath = previousDoc.slug
+    const oldPath = `/products/${previousDoc.slug}`
 
     payload.logger.info(`Revalidating old product at path: ${oldPath}`)
 
@@ -32,7 +32,7 @@ export const revalidateProduct: CollectionAfterChangeHook<Product> = ({
 }
 
 export const revalidateDelete: CollectionAfterDeleteHook<Product> = ({ doc }) => {
-  const path = doc?.slug
+  const path = `/products/${doc?.slug}`
   revalidatePath(path)
   revalidateTag('products-sitemap')
 

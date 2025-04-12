@@ -12,6 +12,7 @@ import {
   applicableCustomers,
 } from '@/constants/collections.constants'
 import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { revalidateDelete, revalidateProductOption } from './hooks/revalidateProductOptions'
 
 const formatNumberRange = (numbers: string[]): string[] => {
   const nums = numbers.map(Number).sort((a, b) => a - b)
@@ -155,31 +156,8 @@ export const ProductOptions: CollectionConfig = {
     plural: '产品选项',
   },
   hooks: {
-    afterChange: [
-      async ({ doc, req }) => {
-        const { product } = doc
-        if (product) {
-          // 获取产品及其所有选项
-          const productData = await req.payload.findByID({
-            collection: 'products',
-            id: product as string,
-            depth: 1,
-          })
-
-          // 计算最低价格
-          const lowestPrice = calculateProductLowestPrice(productData)
-
-          // 更新产品的最低价格
-          await req.payload.update({
-            collection: 'products',
-            id: product as string,
-            data: {
-              lowestPrice,
-            },
-          })
-        }
-      },
-    ],
+    afterChange: [revalidateProductOption],
+    afterDelete: [revalidateDelete],
   },
   defaultPopulate: {
     title: true,
