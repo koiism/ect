@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
-import React from 'react'
+import React, { cache } from 'react'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import { generateMeta } from '@/utilities/generateMeta'
 import { getPayload } from 'payload'
@@ -22,7 +22,7 @@ import { Icon } from '@/components/Icon'
 import { Tracker } from '@/tracking'
 import { DescriptionSection } from '@/components/products/DescriptionSection'
 
-const queryProductBySlug = async ({ slug }: { slug: string }) => {
+const queryProductBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config })
@@ -39,7 +39,7 @@ const queryProductBySlug = async ({ slug }: { slug: string }) => {
   })
 
   return result.docs?.[0] || null
-}
+})
 
 export async function generateStaticParams() {
   const payloadClient = await getPayload({ config })

@@ -3,6 +3,7 @@ import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { slugField } from '@/fields/slug'
 import { generatePreviewPath, getServerSideURL } from '@/utilities'
+import { revalidateDelete, revalidateProduct } from './hooks/revalidateProduct'
 
 export const uiPopulate = {
   title: true,
@@ -242,6 +243,10 @@ export const Products: CollectionConfig = {
     },
     ...slugField(),
   ],
+  hooks: {
+    afterChange: [revalidateProduct],
+    afterDelete: [revalidateDelete],
+  },
   versions: {
     drafts: true,
   },
