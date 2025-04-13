@@ -79,7 +79,9 @@ function generateProductPrompts(params: IProductPromptParams) {
           - 关键词: 3-5个重要关键词,反映产品特点和目标用户搜索意图
           - 当前SEO内容(如有)：${meta}
 
-          使用ISO-2代码"${locale}"指定的语言编写。
+          !!!!!请使用ISO-2代码"${locale}"指定的语言编写!!!!!
+          !!!!!请使用ISO-2代码"${locale}"指定的语言编写!!!!!
+          !!!!!请使用ISO-2代码"${locale}"指定的语言编写!!!!!
           请以JSON格式返回，格式如下，除了返回的JSON之外不要返回其他任何内容：
           {
             "title": "产品标题",
