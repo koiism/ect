@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       contentStr = result.split('\n').slice(1, -1).join('\n').trim()
     }
     /// 兼容 markdown 格式
-    const content = JSON.parse(result.trim())
+    const content = JSON.parse(contentStr.trim())
 
     return NextResponse.json({ content })
   } catch (error) {
