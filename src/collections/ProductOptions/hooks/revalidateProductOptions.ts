@@ -5,7 +5,6 @@ import { calculateProductLowestPrice } from '@/utilities/calculateLowestPrices'
 import { revalidatePath } from 'next/cache'
 
 const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
-
   if (productId) {
     // 获取产品及其所有选项
     const productData = await req.payload.findByID({
@@ -37,8 +36,10 @@ export const revalidateProductOption: CollectionAfterChangeHook<ProductOption> =
 }) => {
   const { product } = doc
   if (product) {
-    updateLowestPrice(product as string, req)
+    // 添加 await 确保异步操作完成
+    await updateLowestPrice(product as string, req)
   }
+  return doc
 }
 
 export const revalidateDelete: CollectionAfterDeleteHook<ProductOption> = async ({
@@ -47,6 +48,8 @@ export const revalidateDelete: CollectionAfterDeleteHook<ProductOption> = async 
 }) => {
   const { product } = doc
   if (product) {
-    updateLowestPrice(product as string, req)
+    // 添加 await 确保异步操作完成
+    await updateLowestPrice(product as string, req)
   }
+  return doc
 }
