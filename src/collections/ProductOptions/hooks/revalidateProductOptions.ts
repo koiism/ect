@@ -13,6 +13,9 @@ const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
       id: productId,
       depth: 1,
     })
+    const path = `/products/${productData.slug}`
+    console.warn(`Revalidating path: ${path}`)
+    revalidatePath(path)
 
     // 计算最低价格
     const lowestPrice = calculateProductLowestPrice(productData)
@@ -25,8 +28,6 @@ const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
         lowestPrice,
       },
     })
-    const path = `/products/${productData.slug}`
-    revalidatePath(path)
   }
 }
 
