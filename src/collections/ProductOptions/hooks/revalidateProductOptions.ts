@@ -3,8 +3,13 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 import type { ProductOption } from '../../../payload-types'
 import { calculateProductLowestPrice } from '@/utilities/calculateLowestPrices'
 import { revalidatePath } from 'next/cache'
+import { ProductOptions } from '..'
 
-const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
+const updateLowestPrice = async (
+  productId: string,
+  req: PayloadRequest,
+  currentOption: ProductOption,
+) => {
   if (productId) {
     // 获取产品及其所有选项
     const productData = await req.payload.findByID({
@@ -13,8 +18,23 @@ const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
       depth: 1,
     })
 
+    const newProductOptions: ProductOption[] = [
+      ...((productData?.productOptions?.docs as ProductOption[]) || []).filter(
+        (option) => option.id !== currentOption.id,
+      ),
+      currentOption,
+    ]
+
+    const newProductData = {
+      ...productData,
+      productOptions: {
+        ...productData.productOptions,
+        docs: newProductOptions,
+      },
+    }
+
     // 计算最低价格
-    const lowestPrice = calculateProductLowestPrice(productData)
+    const lowestPrice = calculateProductLowestPrice(newProductData)
 
     // 更新产品的最低价格
     await req.payload.update({
@@ -37,19 +57,16 @@ export const revalidateProductOption: CollectionAfterChangeHook<ProductOption> =
   const { product } = doc
   if (product) {
     // 添加 await 确保异步操作完成
-    await updateLowestPrice(product as string, req)
+    await updateLowestPrice(product as string, req, doc)
   }
   return doc
 }
 
-export const revalidateDelete: CollectionAfterDeleteHook<ProductOption> = async ({
-  doc,
-  req,
-}) => {
+export const revalidateDelete: CollectionAfterDeleteHook<ProductOption> = async ({ doc, req }) => {
   const { product } = doc
   if (product) {
     // 添加 await 确保异步操作完成
-    await updateLowestPrice(product as string, req)
+    await updateLowestPrice(product as string, req, doc)
   }
   return doc
 }
