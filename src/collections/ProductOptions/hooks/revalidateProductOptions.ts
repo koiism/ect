@@ -2,6 +2,7 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook, PayloadReque
 
 import type { ProductOption } from '../../../payload-types'
 import { calculateProductLowestPrice } from '@/utilities/calculateLowestPrices'
+import { revalidatePath } from 'next/cache'
 
 const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
 
@@ -24,6 +25,8 @@ const updateLowestPrice = async (productId: string, req: PayloadRequest) => {
         lowestPrice,
       },
     })
+    const path = `/products/${productData.slug}`
+    revalidatePath(path)
   }
 }
 
