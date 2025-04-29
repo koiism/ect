@@ -5,6 +5,20 @@ import { OrderConfirmationEmail } from '@/emails/OrderConfirmation'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// 测试邮件
+export async function sendTestEmail(payload: any) {
+  try {
+    await resend.emails.send({
+      from: `${process.env.NEXT_PUBLIC_RESEND_FROM_NAME} <${process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL}>`,
+      to: '1092333914@qq.com',
+      subject: 'Test Email',
+      text: JSON.stringify(payload, null, 2),
+    })
+  } catch (error) {
+    console.error('Failed to send test email:', error)
+  }
+}
+
 // 发送订单确认邮件
 export async function sendOrderConfirmationEmail(order: Order) {
   try {
