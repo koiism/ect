@@ -2,6 +2,23 @@ export function toBeijingTime(date: string) {
   return new Date(new Date(date).getTime() - 8 * 60 * 60 * 1000)
 }
 
+export function formatToBeijingTime(date: Date) {
+  const options = {
+    year: 'numeric' as const,
+    month: '2-digit' as const,
+    day: '2-digit' as const,
+    hour: '2-digit' as const,
+    minute: '2-digit' as const,
+    second: '2-digit' as const,
+    timeZone: 'Asia/Shanghai', // 设置为东八区
+    hour12: false,
+  }
+  const formatter = new Intl.DateTimeFormat('zh-CN', options)
+  const parts = formatter.formatToParts(date)
+  const formatted = `${parts[0].value}-${parts[2].value}-${parts[4].value}T${parts[6].value}:${parts[8].value}:${parts[10].value}+08:00`
+  return formatted
+}
+
 // 北京时间零点
 export function today() {
   const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000

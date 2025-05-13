@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import payloadConfig from '@/payload.config'
 import { findValidOption, isDateValidInProductOptions } from '@/utilities/productOptionsUtils'
 import { formatInTimeZone } from 'date-fns-tz'
-import { toBeijingTime } from '@/utilities/timezone'
+import { formatToBeijingTime, toBeijingTime } from '@/utilities/timezone'
 import {
   CustomerType,
   CustomerType2GYGCategoriesMap,
@@ -109,7 +109,7 @@ export async function GET(request: Request) {
       validOption?.timeRange?.forEach((timeRange, index, timeRanges) => {
         const to = timeRange.toTime
         if (to) {
-          availability.dateTime = toBeijingTime(date).toISOString()
+          availability.dateTime = formatToBeijingTime(toBeijingTime(date))
           if (!availability.openingTimes) {
             availability.openingTimes = []
           }
@@ -121,7 +121,7 @@ export async function GET(request: Request) {
             availabilities.push(availability)
           }
         } else {
-          availability.dateTime = toBeijingTime(`${date} ${timeRange.fromTime}`).toISOString()
+          availability.dateTime = formatToBeijingTime(toBeijingTime(`${date} ${timeRange.fromTime}`))
           availabilities.push(availability)
         }
       })
