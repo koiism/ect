@@ -3,6 +3,7 @@ import { ProductOption } from '@/payload-types'
 import { OrderStatus } from '@/constants/collections.constants'
 import payloadClient from '@/utilities/payloadClient'
 import { calculateLowestPrices } from '@/utilities/calculateLowestPrices'
+import { getDay, getMonth, toBeijingTime, today } from '@/utilities/timezone'
 
 export type CustomerType = NonNullable<ProductOption['applicableCustomers']>[number]
 
@@ -45,7 +46,11 @@ export const useTicketStore = create<TicketState & TicketActions>((set, get) => 
 
   selectOption: (option) => set({ selectedOption: option }),
 
-  selectDate: (date) => set({ date }),
+  selectDate: (date) => {
+    const dateStr = date?.toISOString().split('T')[0]
+    const beijingDate = toBeijingTime(dateStr || '')
+    return set({ date: beijingDate })
+  },
 
   selectTime: (time) => set({ selectedTime: time }),
 
@@ -82,26 +87,28 @@ const availableTimeRangesSelector = (state: TicketState) => {
   const selectedValidDate = selectedValidDateSelector(state)
   if (!state.date || !selectedValidDate) return []
 
-  const month = (state.date.getMonth() + 1).toString()
-  const day = (state.date.getDay() || 7).toString()
+  const month = (getMonth(state.date) + 1).toString()
+  const day = (getDay(state.date) || 7).toString()
 
   const matchingDate = selectedValidDate.find(
     (dateConfig) =>
       dateConfig.months.includes(month as any) && dateConfig.days.includes(day as any),
   )
 
-  return matchingDate?.timeRange?.map((range) => ({
-    id: range.id || null,
-    time: range.time,
-  })) || []
+  return (
+    matchingDate?.timeRange?.map((range) => ({
+      id: range.id || null,
+      time: range.time,
+    })) || []
+  )
 }
 
 const selectedDatePricesSelector = (state: TicketState) => {
   const selectedValidDate = selectedValidDateSelector(state)
   if (!state.date || !selectedValidDate) return {}
 
-  const month = (state.date.getMonth() + 1).toString()
-  const day = (state.date.getDay() || 7).toString()
+  const month = (getMonth(state.date) + 1).toString()
+  const day = (getDay(state.date) || 7).toString()
 
   const matchingDate = selectedValidDate.find(
     (dateConfig) =>
@@ -174,8 +181,8 @@ const isDateDisabledSelector = (state: TicketState) => (date: Date) => {
 
   if (!selectedTicket) return true
 
-  const month = (date.getMonth() + 1).toString()
-  const day = (date.getDay() || 7).toString()
+  const month = (getMonth(date) + 1).toString()
+  const day = (getDay(date) || 7).toString()
 
   const isMonthAvailable = selectedValidDate?.some((dateConfig) =>
     dateConfig.months.includes(month as any),
@@ -185,7 +192,7 @@ const isDateDisabledSelector = (state: TicketState) => (date: Date) => {
     dateConfig.days.includes(day as any),
   )
 
-  const isNotPastDate = date >= new Date(new Date().setHours(0, 0, 0, 0))
+  const isNotPastDate = date >= today()
 
   return !isMonthAvailable || !isDayAvailable || !isNotPastDate
 }

@@ -42,7 +42,7 @@ const getProductsSitemap = unstable_cache(
       ? results.docs
           .filter((product) => Boolean(product?.slug))
           .map((product) => ({
-            loc: `${SITE_URL}/products/${product?.slug}`,
+            loc: `${SITE_URL}products/${product?.slug}`,
             lastmod: product.updatedAt || dateFallback,
             priority: 0.9,
             changefreq: 'daily' as Changefreq

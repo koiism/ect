@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  title: Supplier API - Supplier-side Endpoints
+  version: '1.0'
+  contact:
+    email: supplier-api@getyourguide.com
+    name: 'Integration Support, GetYourGuide'
+    url: https://integrator.getyourguide.com
+servers:
+  - url: 'https://{host}'
+    variables:
+      host:
+        default: example-host.com
+    description: Supplier Endpoint
+security:
+  - BasicAuth: []
+paths:
+  /1/get-availabilities/:
+    get:
+      summary: Availability Query
+      tags:
+        - Availability
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              examples:
+                Time Point Product - Individual:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T10:00:00+02:00'
+                          productId: prod123
+                          cutoffSeconds: 3600
+                          vacancies: 10
+                          currency: 'EUR'
+                          pricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                price: 1500
+                              - category: 'CHILD'
+                                price: 1000
+                        - dateTime: '2020-12-01T15:00:00+02:00'
+                          productId: prod123
+                          cutoffSeconds: 1800
+                          vacancies: 12
+                          currency: 'EUR'
+                          pricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                price: 1600
+                              - category: 'CHILD'
+                                price: 1100
+                Time Period Product - Individual:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T00:00:00+02:00'
+                          openingTimes:
+                            - fromTime: '09:00'
+                              toTime: '18:00'
+                          productId: prod123
+                          cutoffSeconds: 0
+                          vacancies: 10
+                          currency: 'EUR'
+                          pricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                price: 1500
+                              - category: 'CHILD'
+                                price: 1000
+                        - dateTime: '2020-12-02T00:00:00+02:00'
+                          openingTimes:
+                            - fromTime: '09:00'
+                              toTime: '12:00'
+                          productId: prod123
+                          cutoffSeconds: 0
+                          vacancies: 12
+                          currency: 'EUR'
+                          pricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                price: 1600
+                              - category: 'CHILD'
+                                price: 1100
+                Time Point Product - Group:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T10:00:00+02:00'
+                          productId: prod123
+                          cutoffSeconds: 3600
+                          vacancies: 10
+                        - dateTime: '2020-12-01T15:00:00+02:00'
+                          productId: prod123
+                          cutoffSeconds: 1800
+                          vacancies: 12
+                Time Period Product - Group:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T00:00:00+02:00'
+                          openingTimes:
+                            - fromTime: '09:00'
+                              toTime: '18:00'
+                          productId: prod123
+                          cutoffSeconds: 0
+                          vacancies: 10
+                        - dateTime: '2020-12-02T00:00:00+02:00'
+                          openingTimes:
+                            - fromTime: '09:00'
+                              toTime: '12:00'
+                          productId: prod123
+                          cutoffSeconds: 0
+                          vacancies: 12
+                Time Point Product - Tiered Pricing Over API:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T10:00:00+02:00'
+                          productId: prod123
+                          cutoffSeconds: 3600
+                          vacancies: 10
+                          currency: 'EUR'
+                          tieredPricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                tiers:
+                                  - lowerBound: 1
+                                    upperBound: 5
+                                    price: 1600
+                                  - lowerBound: 6
+                                    upperBound: 10
+                                    price: 1500
+                              - category: 'CHILD'
+                                tiers:
+                                  - lowerBound: 1
+                                    upperBound: 5
+                                    price: 1100
+                                  - lowerBound: 6
+                                    upperBound: 10
+                                    price: 1000
+                Time Period Product - Tiered Pricing Over API:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T00:00:00+02:00'
+                          openingTimes:
+                            - fromTime: '09:00'
+                              toTime: '18:00'
+                          productId: prod123
+                          cutoffSeconds: 0
+                          vacancies: 10
+                          currency: 'EUR'
+                          tieredPricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                tiers:
+                                  - lowerBound: 1
+                                    upperBound: 5
+                                    price: 1600
+                                  - lowerBound: 6
+                                    upperBound: 10
+                                    price: 1500
+                              - category: 'CHILD'
+                                tiers:
+                                  - lowerBound: 1
+                                    upperBound: 5
+                                    price: 1100
+                                  - lowerBound: 6
+                                    upperBound: 10
+                                    price: 1000
+                Time Point Product - Availability By Ticket Category:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T10:00:00+02:00'
+                          productId: prod123
+                          cutoffSeconds: 3600
+                          currency: 'EUR'
+                          vacanciesByCategory:
+                            - category: 'ADULT'
+                              vacancies: 5
+                            - category: 'CHILD'
+                              vacancies: 5
+                Time Period Product - Availability By Ticket Category:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T00:00:00+02:00'
+                          openingTimes:
+                            - fromTime: '09:00'
+                              toTime: '18:00'
+                          productId: prod123
+                          cutoffSeconds: 0
+                          currency: 'EUR'
+                          vacanciesByCategory:
+                            - category: 'ADULT'
+                              vacancies: 5
+                            - category: 'CHILD'
+                              vacancies: 5
+                No availabilities:
+                  value:
+                    data:
+                      availabilities: []
+                No availabilities for some dates:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T10:00:00+02:00'
+                          productId: prod123
+                          vacancies: 0
+                        - dateTime: '2020-12-01T15:00:00+02:00'
+                          productId: prod123
+                          vacancies: 0
+                        - dateTime: '2020-12-01T16:00:00+02:00'
+                          productId: prod123
+                          vacancies: 3
+                No availabilities for some dates with Price over API:
+                  value:
+                    data:
+                      availabilities:
+                        - dateTime: '2020-12-01T10:00:00+02:00'
+                          productId: prod123
+                          vacancies: 0
+                        - dateTime: '2020-12-01T15:00:00+02:00'
+                          productId: prod123
+                          vacancies: 0
+                        - dateTime: '2020-12-01T16:00:00+02:00'
+                          productId: prod123
+                          vacancies: 3
+                          currency: 'EUR'
+                          pricesByCategory:
+                            retailPrices:
+                              - category: 'ADULT'
+                                price: 1600
+                              - category: 'CHILD'
+                                price: 1100
+                Error:
+                  value:
+                    errorCode: INVALID_PRODUCT
+                    errorMessage: Invalid productId
+      operationId: get-get-availabilities
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: productId
+          description: The ID of the requested product in the supplier’s system. Please avoid using the character `%` in the `productId`, as it is used as an escape character in URL encoding and may cause encoding/decoding failures in query parameters.
+          required: true
+          example: prod123
+        - schema:
+            type: string
+          in: query
+          name: fromDateTime
+          description: Marks the start (inclusive) of the requested time period (ISO 8601).
+          required: true
+          example: '2020-12-01T00:00:00+02:00'
+        - schema:
+            type: string
+          in: query
+          name: toDateTime
+          description: 'Marks the end (inclusive) of the requested time period (ISO 8601). '
+          required: true
+          example: '2020-12-01T23:59:59+02:00'

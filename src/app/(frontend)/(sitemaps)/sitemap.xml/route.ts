@@ -7,10 +7,10 @@ export async function GET() {
     'https://example.com'
 
   const sitemaps = [
-    `${SITE_URL}/pages-sitemap.xml`,
-    `${SITE_URL}/posts-sitemap.xml`,
-    `${SITE_URL}/cities-sitemap.xml`,
-    `${SITE_URL}/products-sitemap.xml`,
+    `${SITE_URL}pages-sitemap.xml`,
+    `${SITE_URL}posts-sitemap.xml`,
+    `${SITE_URL}cities-sitemap.xml`,
+    `${SITE_URL}products-sitemap.xml`,
     // `${SITE_URL}/categories-sitemap.xml`
   ]
 

@@ -3,6 +3,23 @@ export enum CustomerType {
   Youth = 'Youth',
   Children = 'Children',
   Senior = 'Senior',
+  Infant = 'Infant',
+}
+
+export const CustomerType2GYGCategoriesMap = {
+  [CustomerType.Adult]: 'ADULT',
+  [CustomerType.Youth]: 'YOUTH',
+  [CustomerType.Children]: 'CHILD',
+  [CustomerType.Senior]: 'SENIOR',
+  [CustomerType.Infant]: 'INFANT',
+}
+
+export const GYTCategories2CustomerTypeMap = {
+  ADULT: CustomerType.Adult,
+  YOUTH: CustomerType.Youth,
+  CHILD: CustomerType.Children,
+  SENIOR: CustomerType.Senior,
+  INFANT: CustomerType.Infant,
 }
 
 export const customerTypeLabels: Record<CustomerType, string> = {
@@ -10,7 +27,11 @@ export const customerTypeLabels: Record<CustomerType, string> = {
   [CustomerType.Youth]: '青年',
   [CustomerType.Children]: '儿童',
   [CustomerType.Senior]: '老人',
+  [CustomerType.Infant]: '婴儿',
 }
+
+export type CustomerTypeName = keyof CustomerType
+export type GYGCategory = keyof typeof GYTCategories2CustomerTypeMap
 
 export enum OrderStatus {
   PENDING = 'pending',

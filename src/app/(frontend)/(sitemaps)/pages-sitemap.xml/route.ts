@@ -40,7 +40,7 @@ const getPagesSitemap = unstable_cache(
 
     const defaultSitemap: ISitemapField[] = [
       {
-        loc: `${SITE_URL}/search`,
+        loc: `${SITE_URL}search`,
         lastmod: dateFallback,
         priority: 0.8,
         changefreq: 'daily' as Changefreq,
@@ -53,7 +53,7 @@ const getPagesSitemap = unstable_cache(
           .map((page) => {
             const isHomePage = page?.slug === 'home'
             return {
-              loc: isHomePage ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
+              loc: isHomePage ? `${SITE_URL}` : `${SITE_URL}${page?.slug}`,
               lastmod: page.updatedAt || dateFallback,
               priority: isHomePage ? 1.0 : 0.7,
               changefreq: isHomePage ? 'daily' : ('weekly' as Changefreq),

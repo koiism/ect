@@ -42,7 +42,7 @@ const getCitiesSitemap = unstable_cache(
       ? results.docs
           .filter((city) => Boolean(city?.slug))
           .map((city) => ({
-            loc: `${SITE_URL}/cities/${city?.slug}`,
+            loc: `${SITE_URL}cities/${city?.slug}`,
             lastmod: city.updatedAt || dateFallback,
             priority: 0.8,
             changefreq: 'weekly' as Changefreq

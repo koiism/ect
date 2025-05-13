@@ -1266,7 +1266,11 @@ export interface ProductOption {
   product: string | Product;
   title: string;
   summary?: string | null;
-  applicableCustomers?: ('Adult' | 'Youth' | 'Children' | 'Senior')[] | null;
+  /**
+   * 在开始时间的多少秒内无法被预定
+   */
+  cutoffSeconds?: number | null;
+  applicableCustomers?: ('Adult' | 'Youth' | 'Children' | 'Senior' | 'Infant')[] | null;
   /**
    * 选择预订该产品时需要填写的表单
    */
@@ -1290,6 +1294,14 @@ export interface ProductOption {
     timeRange?:
       | {
           time: string;
+          /**
+           * 24小时制开始时间
+           */
+          fromTime: string;
+          /**
+           * 24小时制结束时间
+           */
+          toTime?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -1298,7 +1310,9 @@ export interface ProductOption {
       Youth?: number | null;
       Children?: number | null;
       Senior?: number | null;
+      Infant?: number | null;
     };
+    vacancies?: number | null;
     id?: string | null;
   }[];
   updatedAt: string;
@@ -2782,6 +2796,7 @@ export interface Order {
     Youth?: number | null;
     Children?: number | null;
     Senior?: number | null;
+    Infant?: number | null;
   };
   ticket: string | ProductOption;
   product: string | Product;
@@ -3485,6 +3500,7 @@ export interface ProductOptionsSelect<T extends boolean = true> {
   product?: T;
   title?: T;
   summary?: T;
+  cutoffSeconds?: T;
   applicableCustomers?: T;
   requiredInfo?: T;
   availableDate?:
@@ -3497,6 +3513,8 @@ export interface ProductOptionsSelect<T extends boolean = true> {
           | T
           | {
               time?: T;
+              fromTime?: T;
+              toTime?: T;
               id?: T;
             };
         price?:
@@ -3506,7 +3524,9 @@ export interface ProductOptionsSelect<T extends boolean = true> {
               Youth?: T;
               Children?: T;
               Senior?: T;
+              Infant?: T;
             };
+        vacancies?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -3527,6 +3547,7 @@ export interface OrdersSelect<T extends boolean = true> {
         Youth?: T;
         Children?: T;
         Senior?: T;
+        Infant?: T;
       };
   ticket?: T;
   product?: T;

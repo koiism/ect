@@ -1,7 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '@/access/authenticated'
 import { ProductOption } from '@/payload-types'
-import { calculateProductLowestPrice } from '@/utilities/calculateLowestPrices'
 import {
   CustomerType,
   customerTypeLabels,
@@ -144,6 +143,13 @@ const validateDateOverlap = (value: unknown[] | null | undefined): string | true
   return true
 }
 
+const validateTime = (value: string | null | undefined) => {
+  if (value && !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
+    return '请输入正确的时间格式'
+  }
+  return true
+}
+
 export const ProductOptions: CollectionConfig = {
   slug: 'product-options',
   admin: {
@@ -218,6 +224,16 @@ export const ProductOptions: CollectionConfig = {
       localized: true,
     },
     {
+      name: 'cutoffSeconds',
+      type: 'number',
+      label: '截止时间（秒）',
+      defaultValue: 0,
+      admin: {
+        step: 60 * 10,
+        description: '在开始时间的多少秒内无法被预定',
+      },
+    },
+    {
       type: 'tabs',
       label: '描述',
       tabs: [
@@ -230,7 +246,7 @@ export const ProductOptions: CollectionConfig = {
               type: 'select',
               hasMany: true,
               options: applicableCustomers,
-              defaultValue: ['Adult'],
+              defaultValue: [CustomerType.Adult],
             },
             {
               name: 'requiredInfo',
@@ -295,6 +311,23 @@ export const ProductOptions: CollectionConfig = {
                       required: true,
                       localized: true,
                     },
+                    {
+                      name: 'fromTime',
+                      type: 'text',
+                      validate: validateTime,
+                      required: true,
+                      admin: {
+                        description: '24小时制开始时间',
+                      },
+                    },
+                    {
+                      name: 'toTime',
+                      type: 'text',
+                      validate: validateTime,
+                      admin: {
+                        description: '24小时制结束时间',
+                      },
+                    },
                   ],
                   admin: {
                     description: '添加可选的时间段，如"8:00AM~12:00PM"',
@@ -314,6 +347,12 @@ export const ProductOptions: CollectionConfig = {
                       condition: (data) => data?.applicableCustomers?.includes(type),
                     },
                   })),
+                },
+                {
+                  name: 'vacancies',
+                  type: 'number',
+                  label: '席位',
+                  defaultValue: 9999,
                 },
               ],
               admin: {

@@ -1,3 +1,4 @@
+import { CustomerType } from '@/constants/collections.constants'
 import { Product, ProductOption } from '@/payload-types'
 
 type DateConfig = NonNullable<ProductOption['availableDate']>[number]
@@ -32,7 +33,7 @@ export const calculateProductLowestPrice = (product: Product): number => {
 
     option.availableDate.forEach((dateConfig) => {
       if (!dateConfig.price || !dateConfig.available) return
-      const price = dateConfig.price.Adult
+      const price = dateConfig.price[CustomerType.Adult]
       if (typeof price === 'number' && price < lowestPrice) {
         lowestPrice = price
       }

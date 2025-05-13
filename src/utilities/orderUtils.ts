@@ -1,10 +1,5 @@
 import { Order, ProductOption } from '@/payload-types'
-
-type DatePrice = {
-  price: {
-    [key: string]: number
-  }
-}
+import { getDay, getMonth } from './timezone'
 
 export function calculateOrderAmount(order: Order): {
   success: boolean
@@ -27,8 +22,8 @@ export function calculateOrderAmount(order: Order): {
 
     // 找到对应日期的价格
     const orderDate = new Date(order.date)
-    const month = String(orderDate.getMonth() + 1) as ProductOption['availableDate'][number]['months'][number]
-    const day = String(orderDate.getDay() || 7) as ProductOption['availableDate'][number]['days'][number]
+    const month = String(getMonth(orderDate) + 1) as ProductOption['availableDate'][number]['months'][number]
+    const day = String(getDay(orderDate) || 7) as ProductOption['availableDate'][number]['days'][number]
 
     const dateOption = ticket.availableDate.find(
       (date) =>
